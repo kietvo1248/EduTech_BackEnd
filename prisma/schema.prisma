@@ -1,0 +1,379 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+// 1. Cấu hình kết nối
+generator client {
+  provider = "prisma-client-js"
+  engineType = "library"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 2. Các Enums (Kiểu dữ liệu định danh)
+enum Role {
+  STUDENT
+  TEACHER
+  PARENT
+  ADMIN
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  EXPIRED
+  CANCELLED
+}
+
+enum QuestionType {
+  MULTIPLE_CHOICE
+  FILL_IN_BLANK
+  TRUE_FALSE
+}
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
+// ==========================================
+// MODULE 1: IDENTITY & AUTH (Bảo mật & Token)
+// ==========================================
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  passwordHash  String?   // Null nếu login bằng Google
+  role          Role      @default(STUDENT)
+  avatarUrl     String?
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Quan hệ 1-1 với các Profile
+  studentProfile StudentProfile?
+  teacherProfile TeacherProfile?
+  parentProfile  ParentProfile?
+
+  // Quan hệ 1-N: Một User có thể đăng nhập nhiều nơi (Nhiều Sessions)
+  sessions       Session[]
+
+  // Các quan hệ khác
+  subscriptions  UserSubscription[]
+  transactions   Transaction[]
+  notifications  Notification[]
+  
+  // Tracking
+  lessonProgress LessonProgress[]
+  quizAttempts   QuizAttempt[]
+
+  @@map("users")
+}
+
+// Bảng lưu Token (Refresh Token) - Giải quyết yêu cầu của bạn
+model Session {
+  id           String   @id @default(uuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  hashedRt     String   // Chỉ lưu mã băm của Refresh Token (Bảo mật)
+  
+  deviceInfo   String?  // Ví dụ: "iPhone 14 Pro", "Chrome on Windows"
+  ipAddress    String?  // Để phát hiện đăng nhập lạ
+  expiresAt    DateTime // Thời hạn của Refresh Token
+  createdAt    DateTime @default(now())
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model StudentProfile {
+  id           String    @id @default(uuid())
+  userId       String    @unique
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  fullName     String
+  gender       Gender?
+  dateOfBirth  DateTime?
+  schoolName   String?
+  gradeLevel   Int       // Lớp 10, 11, 12...
+  
+  // Gamification Stats
+  diamondBalance Int     @default(0) // Xu tích lũy
+  xpTotal        Int     @default(0) // Kinh nghiệm
+  currentStreak  Int     @default(0) // Chuỗi ngày học liên tục
+
+  // Quan hệ với phụ huynh
+  parents      ParentStudentLink[]
+
+  @@map("student_profiles")
+}
+
+model ParentProfile {
+  id           String    @id @default(uuid())
+  userId       String    @unique
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  fullName     String
+  phoneNumber  String?   @unique
+  
+  children     ParentStudentLink[]
+
+  @@map("parent_profiles")
+}
+
+model TeacherProfile {
+  id           String    @id @default(uuid())
+  userId       String    @unique
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  fullName     String
+  bio          String?   // Giới thiệu ngắn
+  major        String?   // Chuyên môn: Toán, Lý...
+  
+  courses      Course[]  // Giáo viên tạo khóa học nào
+
+  @@map("teacher_profiles")
+}
+
+// Bảng trung gian Phụ huynh - Học sinh
+model ParentStudentLink {
+  id           String        @id @default(uuid())
+  parentId     String
+  studentId    String
+  
+  parent       ParentProfile  @relation(fields: [parentId], references: [id])
+  student      StudentProfile @relation(fields: [studentId], references: [id])
+  
+  isVerified   Boolean        @default(false) // Phụ huynh đã xác thực chưa
+  createdAt    DateTime       @default(now())
+
+  @@unique([parentId, studentId]) // Một cặp chỉ link 1 lần
+  @@map("parent_student_links")
+}
+
+// ==========================================
+// MODULE 2: ACADEMIC CONTENT (Nội dung học)
+// ==========================================
+
+model Subject {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique // Toán, Lý, Hóa
+  slug      String   @unique // toan, ly, hoa
+  iconUrl   String?
+  
+  courses   Course[]
+
+  @@map("subjects")
+}
+
+model GradeLevel {
+  id      Int      @id @default(autoincrement())
+  name    String   @unique // "Lớp 10", "Lớp 11"
+  value   Int      // 10, 11
+  
+  courses Course[]
+
+  @@map("grade_levels")
+}
+
+model Course {
+  id            String    @id @default(uuid())
+  title         String
+  description   String?   @db.Text
+  thumbnailUrl  String?
+  isPublished   Boolean   @default(false)
+  isPro         Boolean   @default(false) // Phải mua gói Pro mới xem được
+  
+  // Foreign Keys
+  subjectId     Int
+  subject       Subject   @relation(fields: [subjectId], references: [id])
+  gradeLevelId  Int
+  gradeLevel    GradeLevel @relation(fields: [gradeLevelId], references: [id])
+  authorId      String
+  author        TeacherProfile @relation(fields: [authorId], references: [id])
+
+  // Relations
+  chapters      Chapter[]
+  createdAt     DateTime  @default(now())
+
+  @@index([subjectId, gradeLevelId])
+  @@map("courses")
+}
+
+model Chapter {
+  id          String   @id @default(uuid())
+  title       String
+  orderIndex  Int      // 1000, 2000... để sắp xếp
+  courseId    String
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  
+  lessons     Lesson[]
+
+  @@map("chapters")
+}
+
+model Lesson {
+  id             String   @id @default(uuid())
+  title          String
+  description    String?
+  orderIndex     Int
+  durationSeconds Int     @default(0)
+  
+  // Content
+  videoUrl       String?  // Link HLS streaming
+  contentMd      String?  @db.Text // Nội dung bài đọc (Markdown)
+  isPreview      Boolean  @default(false) // Cho phép xem thử
+
+  chapterId      String
+  chapter        Chapter  @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+
+  // Tracking & Questions
+  progress       LessonProgress[]
+  questions      Question[] // Câu hỏi tương tác trong bài (popup quiz)
+  materials      Material[] // Tài liệu đính kèm
+
+  @@index([chapterId, orderIndex])
+  @@map("lessons")
+}
+
+model Material {
+  id        String   @id @default(uuid())
+  title     String
+  fileUrl   String
+  type      String   // PDF, DOCX, IMG
+  
+  lessonId  String
+  lesson    Lesson   @relation(fields: [lessonId], references: [id])
+
+  @@map("materials")
+}
+
+// ==========================================
+// MODULE 3: QUESTION BANK (Ngân hàng câu hỏi)
+// ==========================================
+
+model Question {
+  id            String       @id @default(uuid())
+  contentHtml   String       @db.Text // Hỗ trợ MathJax/LaTeX
+  type          QuestionType
+  difficulty    Difficulty   @default(MEDIUM)
+  
+  options       Json         // Mảng các đáp án: [{id: 1, text: "A"}, {id: 2, text: "B"}]
+  correctAnswer String       // ID của đáp án đúng hoặc text đúng
+  explanation   String?      @db.Text // Giải thích đáp án
+
+  // Link tới bài học (nếu là câu hỏi kiểm tra bài cũ)
+  lessonId      String?
+  lesson        Lesson?      @relation(fields: [lessonId], references: [id])
+
+  // Tracking
+  attempts      QuizAttempt[]
+
+  @@map("questions")
+}
+
+// ==========================================
+// MODULE 4: MONETIZATION (Thanh toán)
+// ==========================================
+
+model SubscriptionPlan {
+  id            String   @id // BASIC, PRO_MONTHLY, PRO_YEARLY
+  name          String
+  price         Decimal  @db.Decimal(10, 2)
+  durationDays  Int      // 30, 365
+  features      Json     // ["no-ads", "offline-mode"]
+
+  subscriptions UserSubscription[]
+
+  @@map("subscription_plans")
+}
+
+model UserSubscription {
+  id            String             @id @default(uuid())
+  userId        String
+  user          User               @relation(fields: [userId], references: [id])
+  planId        String
+  plan          SubscriptionPlan   @relation(fields: [planId], references: [id])
+  
+  startDate     DateTime           @default(now())
+  endDate       DateTime
+  status        SubscriptionStatus @default(ACTIVE)
+
+  @@map("user_subscriptions")
+}
+
+model Transaction {
+  id              String   @id @default(uuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+  
+  amount          Decimal  @db.Decimal(10, 2)
+  currency        String   @default("VND")
+  provider        String   // MOMO, VNPAY, APPLE_IAP
+  providerRefId   String?  // Mã giao dịch phía đối tác
+  status          String   // PENDING, SUCCESS, FAILED
+  
+  createdAt       DateTime @default(now())
+
+  @@map("transactions")
+}
+
+// ==========================================
+// MODULE 5: PROGRESS & ANALYTICS (Dữ liệu lớn)
+// ==========================================
+
+model LessonProgress {
+  id              String    @id @default(uuid())
+  userId          String
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lessonId        String
+  lesson          Lesson    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  
+  isCompleted     Boolean   @default(false)
+  lastWatchedSec  Int       @default(0) // Đã xem đến giây thứ bao nhiêu
+  updatedAt       DateTime  @updatedAt
+
+  @@unique([userId, lessonId]) // Mỗi user chỉ có 1 record tiến độ cho 1 bài
+  @@map("lesson_progress")
+}
+
+model QuizAttempt {
+  id           String    @id @default(uuid())
+  userId       String
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  questionId   String
+  question     Question  @relation(fields: [questionId], references: [id])
+  
+  isCorrect    Boolean
+  userAnswer   String    // Câu trả lời của user
+  timeSpentMs  Int       // Thời gian suy nghĩ (milliseconds)
+  createdAt    DateTime  @default(now())
+
+  @@map("quiz_attempts")
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  title     String
+  message   String
+  isRead    Boolean  @default(false)
+  type      String   // SYSTEM, PROMOTION, ACADEMIC
+  createdAt DateTime @default(now())
+
+  @@map("notifications")
+}

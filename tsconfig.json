@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "module": "commonjs",             // Đổi từ nodenext -> commonjs
+    "moduleResolution": "node",       // Đổi từ nodenext -> node
+    "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "ES2021",               // ES2023 vẫn ok, nhưng ES2021 an toàn hơn cho target commonjs
+    "sourceMap": true,
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "incremental": true,
+    "skipLibCheck": true,
+    "strictNullChecks": false,        // NestJS thường để false dòng này để dễ dev, bạn đang để true (tùy chọn)
+    "noImplicitAny": false,
+    "strictBindCallApply": false,
+    "forceConsistentCasingInFileNames": false,
+    "noFallthroughCasesInSwitch": false,
+    "resolveJsonModule": true,        // Thêm dòng này nếu cần import file .json
+    "esModuleInterop": true
+  }
+}
