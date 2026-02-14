@@ -1,83 +1,46 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
+import { UsersRepository } from './users.repository';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { Role } from '@prisma/client';
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private readonly usersRepository: UsersRepository) {}
 
-  // 1. Lấy thông tin chi tiết (ME)
   async getMe(userId: string) {
-    // Lấy user kèm theo profile tương ứng
-    const user = await this.prisma.user.findUnique({
-      where: { id: userId },
-      include: {
-        studentProfile: true,
-        teacherProfile: true,
-        parentProfile: true,
-      },
-    });
+    const user = await this.usersRepository.findByIdWithProfiles(userId);
+    if (!user) {
+      throw new NotFoundException('Không tìm thấy tài khoản người dùng');
+    }
 
-    if (!user) throw new NotFoundException('User not found');
-
-    // Loại bỏ các trường nhạy cảm
-    const { passwordHash, ...result } = user;
-    return result;
+    // Bảo mật: Loại bỏ passwordHash và các thông tin nhạy cảm trước khi trả về
+    const { passwordHash, ...safeUser } = user;
+    return safeUser;
   }
 
-  // 2. Cập nhật Profile (Đa hình)
   async updateProfile(userId: string, dto: UpdateProfileDto) {
-    const user = await this.prisma.user.findUnique({ where: { id: userId } });
-    if (!user) throw new NotFoundException('User not found');
+    const user = await this.usersRepository.findByIdWithProfiles(userId);
+    if (!user) {
+      throw new NotFoundException('Không tìm thấy tài khoản người dùng');
+    }
 
-    // Dựa vào Role để update bảng phụ tương ứng
+    // Logic Đa hình: Dựa vào Role để gọi Repository tương ứng
     switch (user.role) {
       case Role.STUDENT:
-        return this.updateStudentProfile(userId, dto);
+        await this.usersRepository.updateStudentProfile(userId, dto);
+        break;
       case Role.TEACHER:
-        return this.updateTeacherProfile(userId, dto);
+        await this.usersRepository.updateTeacherProfile(userId, dto);
+        break;
       case Role.PARENT:
-        return this.updateParentProfile(userId, dto);
+        await this.usersRepository.updateParentProfile(userId, dto);
+        break;
       default:
-        return user; // Admin hoặc role khác chưa xử lý
+        // Admin hoặc các role không cần update profile phụ
+        break;
     }
-  }
 
-  // Logic riêng cho Student
-  private async updateStudentProfile(userId: string, dto: UpdateProfileDto) {
-    return this.prisma.studentProfile.update({
-      where: { userId },
-      data: {
-        fullName: dto.fullName,
-        dateOfBirth: dto.dateOfBirth ? new Date(dto.dateOfBirth) : undefined,
-        gender: dto.gender,
-        schoolName: dto.schoolName,
-        gradeLevel: dto.gradeLevel,
-      },
-    });
-  }
-
-  // Logic riêng cho Teacher
-  private async updateTeacherProfile(userId: string, dto: UpdateProfileDto) {
-    return this.prisma.teacherProfile.update({
-      where: { userId },
-      data: {
-        fullName: dto.fullName,
-        bio: dto.bio,
-        // major: dto.major... (nếu có trong DTO)
-      },
-    });
-  }
-
-  // Logic riêng cho Parent
-  private async updateParentProfile(userId: string, dto: UpdateProfileDto) {
-    return this.prisma.parentProfile.update({
-      where: { userId },
-      data: {
-        fullName: dto.fullName,
-        // phoneNumber...
-      },
-    });
+    // Trả về thông tin user mới nhất sau khi cập nhật
+    return this.getMe(userId);
   }
 }

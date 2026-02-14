@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsInt, Min, Max, IsDateString, IsEnum } from 'class-validator';
+import { IsString, IsOptional, IsInt, Min, Max, IsDateString, IsEnum, IsPhoneNumber } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Gender } from '@prisma/client';
 
@@ -18,7 +18,7 @@ export class UpdateProfileDto {
   @IsEnum(Gender)
   gender?: Gender;
 
-  // Dành riêng cho học sinh
+  // --- Dành riêng cho STUDENT ---
   @ApiPropertyOptional({ example: 'THPT Chuyên Hùng Vương' })
   @IsOptional()
   @IsString()
@@ -27,13 +27,24 @@ export class UpdateProfileDto {
   @ApiPropertyOptional({ example: 10 })
   @IsOptional()
   @IsInt()
-  @Min(6)
+  @Min(1)
   @Max(12)
   gradeLevel?: number;
 
-  // Dành riêng cho giáo viên/phụ huynh (nếu cần thêm sau này)
+  // --- Dành riêng cho TEACHER ---
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
   bio?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  major?: string;
+
+  // --- Dành riêng cho PARENT ---
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsPhoneNumber('VN')
+  phoneNumber?: string;
 }
