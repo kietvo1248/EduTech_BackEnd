@@ -2,8 +2,8 @@ import { Body, Controller, Get, Patch, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
-import { AtGuard } from '../../common/guards'; 
-import { GetCurrentUserId } from '../../common/decorators'; 
+import { AtGuard } from '../../common/guards';
+import { GetCurrentUserId } from '../../common/decorators';
 
 @ApiTags('Users (Cá nhân hóa)')
 @Controller('users')

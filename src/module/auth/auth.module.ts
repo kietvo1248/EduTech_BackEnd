@@ -8,10 +8,10 @@ import { AtStrategy, RtStrategy, GoogleStrategy } from './strategies'; // Import
 @Module({
   imports: [
     // 1. Cung cấp JwtService cho AuthService
-    JwtModule.register({}), 
-    
+    JwtModule.register({}),
+
     // 2. Hỗ trợ Passport
-    PassportModule,         
+    PassportModule,
   ],
   controllers: [AuthController],
   providers: [

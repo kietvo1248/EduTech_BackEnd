@@ -1,10 +1,21 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto, LoginDto, LogoutDto } from './dto'; // Import đủ DTO
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
-import { GetCurrentUser, GetCurrentUserId } from '../../common/decorators'; 
+import { GetCurrentUser, GetCurrentUserId } from '../../common/decorators';
 import { AtGuard, RtGuard } from '../../common/guards';
+import { Request, Response } from 'express';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -51,13 +62,15 @@ export class AuthController {
   // --- GOOGLE AUTH ---
   @Get('google')
   @UseGuards(AuthGuard('google'))
-  async googleAuth(@Req() req) {}
+  async googleAuth() {}
 
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
-  async googleAuthRedirect(@Req() req, @Res() res) {
+  async googleAuthRedirect(@Req() req: Request, @Res() res: Response) {
     const tokens = await this.authService.googleLogin(req);
     // Redirect về App Mobile
-    return res.redirect(`${process.env.FRONTEND_URL}/login-success?data=${JSON.stringify(tokens)}`);
+    return res.redirect(
+      `${process.env.FRONTEND_URL}/login-success?data=${JSON.stringify(tokens)}`,
+    );
   }
 }
