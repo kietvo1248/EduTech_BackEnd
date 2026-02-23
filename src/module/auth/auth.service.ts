@@ -41,12 +41,12 @@ export class AuthService {
       const newUser = await this.prisma.user.create({
         data: {
           email: dto.email,
-          passwordHash: hash, // Sửa tên trường theo schema: password -> passwordHash
+          passwordHash: hash,
+          fullName: dto.fullName,
+          dateOfBirth: new Date(dto.dateOfBirth),
           studentProfile: {
             create: {
-              fullName: dto.fullName,
               gradeLevel: dto.gradeLevel,
-              dateOfBirth: new Date(dto.dateOfBirth),
             },
           },
         },
@@ -89,10 +89,9 @@ export class AuthService {
       user = await this.prisma.user.create({
         data: {
           email,
-          // Google login không có passwordHash
+          fullName: `${firstName} ${lastName}`,
           studentProfile: {
             create: {
-              fullName: `${firstName} ${lastName}`,
               gradeLevel: 10, // Mặc định lớp 10, user sẽ update sau
             },
           },

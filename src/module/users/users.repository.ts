@@ -20,37 +20,56 @@ export class UsersRepository {
 
   // Cập nhật Profile Học sinh
   async updateStudentProfile(userId: string, data: UpdateProfileDto) {
-    return this.prisma.studentProfile.update({
-      where: { userId },
+    return this.prisma.user.update({
+      where: { id: userId },
       data: {
+        // 1. Cập nhật thông tin chung ở bảng User
         fullName: data.fullName,
         dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth) : undefined,
         gender: data.gender,
-        schoolName: data.schoolName,
-        gradeLevel: data.gradeLevel,
+        phoneNumber: data.phoneNumber,
+
+        // 2. Cập nhật thông tin riêng ở bảng StudentProfile
+        studentProfile: {
+          update: {
+            schoolName: data.schoolName,
+            gradeLevel: data.gradeLevel,
+          },
+        },
       },
     });
   }
 
   // Cập nhật Profile Giáo viên
   async updateTeacherProfile(userId: string, data: UpdateProfileDto) {
-    return this.prisma.teacherProfile.update({
-      where: { userId },
+    return this.prisma.user.update({
+      where: { id: userId },
       data: {
         fullName: data.fullName,
-        bio: data.bio,
-        major: data.major,
+        dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth) : undefined,
+        gender: data.gender,
+        phoneNumber: data.phoneNumber,
+
+        teacherProfile: {
+          update: {
+            bio: data.bio,
+            major: data.major,
+          },
+        },
       },
     });
   }
 
   // Cập nhật Profile Phụ huynh
   async updateParentProfile(userId: string, data: UpdateProfileDto) {
-    return this.prisma.parentProfile.update({
-      where: { userId },
+    return this.prisma.user.update({
+      where: { id: userId },
       data: {
         fullName: data.fullName,
+        dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth) : undefined,
+        gender: data.gender,
         phoneNumber: data.phoneNumber,
+        // Parent hiện chưa có field riêng nào cập nhật thêm
       },
     });
   }

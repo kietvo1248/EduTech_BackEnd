@@ -63,14 +63,21 @@ enum TransactionStatus {
 model User {
   id           String   @id @default(uuid())
   email        String   @unique
-  passwordHash String?  // Null nếu login bằng Google
+  passwordHash String?  
   role         Role     @default(STUDENT)
   avatarUrl    String?
+  
+  // --- THÔNG TIN CHUNG (Đã được gom lên đây) ---
+  fullName     String?
+  phoneNumber  String?  @unique
+  dateOfBirth  DateTime?
+  gender       Gender?
+
   isActive     Boolean  @default(true)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  // Quan hệ 1-1 với các Profile
+  // Quan hệ 1-1 với các Profile chuyên biệt
   studentProfile StudentProfile?
   teacherProfile TeacherProfile?
   parentProfile  ParentProfile?
@@ -104,9 +111,7 @@ model StudentProfile {
   id             String    @id @default(uuid())
   userId         String    @unique
   user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  fullName       String
-  gender         Gender?
-  dateOfBirth    DateTime?
+  
   schoolName     String?
   gradeLevel     Int?
   diamondBalance Int       @default(0)
@@ -123,12 +128,12 @@ model TeacherProfile {
   id       String  @id @default(uuid())
   userId   String  @unique
   user     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  fullName String
+  
   bio      String? @db.Text
   major    String?
 
   // Quan hệ
-  courses  Course[] // Các khóa học do giáo viên tạo
+  courses  Course[] 
 
   @@map("teacher_profiles")
 }
@@ -137,10 +142,10 @@ model ParentProfile {
   id          String  @id @default(uuid())
   userId      String  @unique
   user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  fullName    String
-  phoneNumber String? @unique
+  
+  // --- THÔNG TIN RIÊNG CỦA PHỤ HUYNH ---
+  // Chưa có
 
-  // Quan hệ
   children    ParentStudentLink[]
 
   @@map("parent_profiles")

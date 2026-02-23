@@ -132,11 +132,11 @@ async function main() {
   const teacherUser = await prisma.user.create({
     data: {
       email: 'teacher@edutech.com',
+      fullName: 'Giáo viên Trần Văn B',
       passwordHash,
       role: Role.TEACHER,
       teacherProfile: {
         create: {
-          fullName: 'Giáo viên Trần Văn B',
           major: 'Toán Học',
           bio: 'Thạc sĩ Sư phạm Toán',
         },
@@ -149,13 +149,12 @@ async function main() {
   const parentUser = await prisma.user.create({
     data: {
       email: 'parent@edutech.com',
+      fullName: 'Phụ huynh Nguyễn Văn C',
+      phoneNumber: '0987654321',
       passwordHash,
       role: Role.PARENT,
       parentProfile: {
-        create: {
-          fullName: 'Phụ huynh Nguyễn Văn C',
-          phoneNumber: '0987654321',
-        },
+        create: {},
       },
     },
     include: { parentProfile: true },
@@ -165,15 +164,15 @@ async function main() {
   const studentUser = await prisma.user.create({
     data: {
       email: 'student@edutech.com',
+      fullName: 'Học sinh Lê Thị D',
+      gender: Gender.FEMALE,
       passwordHash,
       role: Role.STUDENT,
       studentProfile: {
         create: {
-          fullName: 'Học sinh Lê Thị D',
           gradeLevel: 10,
           diamondBalance: 500,
           xpTotal: 1200,
-          gender: Gender.FEMALE,
         },
       },
     },
@@ -183,25 +182,23 @@ async function main() {
   // --- Liên kết Phụ huynh - Học sinh ---
   await prisma.parentStudentLink.create({
     data: {
-      parentId: parentUser.parentProfile.id,
-      studentId: studentUser.studentProfile.id,
+      parentId: parentUser.parentProfile!.id,
+      studentId: studentUser.studentProfile!.id,
       isVerified: true,
     },
   });
 
   // --- 4.5 Tạo thêm 11 Students ngẫu nhiên (Tổng cộng ~15 users) ---
-  const randomStudents: Prisma.UserGetPayload<{
-    include: { studentProfile: true };
-  }>[] = [];
+  const randomStudents: typeof studentUser[] = [];
   for (let i = 1; i <= 11; i++) {
     const s = await prisma.user.create({
       data: {
         email: `student${i}@random.com`,
+        fullName: `Học sinh số ${i}`,
         passwordHash,
         role: Role.STUDENT,
         studentProfile: {
           create: {
-            fullName: `Học sinh số ${i}`,
             gradeLevel: Math.floor(Math.random() * 7) + 6,
           },
         },
@@ -230,7 +227,7 @@ async function main() {
         isPro: i % 2 === 0, // Đan xen khóa miễn phí và Pro
         subjectId: subjects[i % subjects.length].id,
         gradeLevelId: grades[i % grades.length].id,
-        authorId: teacherUser.teacherProfile.id, // Liên kết với Profile Giáo viên cứng
+        authorId: teacherUser.teacherProfile!.id,
       },
     });
     courses.push(course);

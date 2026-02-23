@@ -6,7 +6,7 @@ import {
   Max,
   IsDateString,
   IsEnum,
-  IsPhoneNumber,
+  Matches,
 } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Gender } from '@prisma/client';
@@ -51,9 +51,9 @@ export class UpdateProfileDto {
   @IsString()
   major?: string;
 
-  // --- Dành riêng cho PARENT ---
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: '0912345678' })
   @IsOptional()
-  @IsPhoneNumber('VN')
+  @IsString()
+  @Matches(/^[+]?[\d\s\-]{6,20}$/, { message: 'phoneNumber không đúng định dạng' })
   phoneNumber?: string;
 }
