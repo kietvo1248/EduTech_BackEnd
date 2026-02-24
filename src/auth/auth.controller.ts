@@ -1,4 +1,12 @@
-import { Controller, Post, Body, Get, Query, Res, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  Query,
+  Res,
+  HttpStatus,
+} from '@nestjs/common';
 import { ApiTags, ApiResponse, ApiBody, ApiOperation } from '@nestjs/swagger';
 import { Response } from 'express';
 import { BaseController } from '../core/base/base.controller';
@@ -108,10 +116,7 @@ export class AuthController extends BaseController {
     status: 400,
     description: 'Email not verified',
   })
-  async login(
-    @Body() dto: SignInDto,
-    @Res() res: Response,
-  ): Promise<Response> {
+  async login(@Body() dto: SignInDto, @Res() res: Response): Promise<Response> {
     const { user, accessToken, refreshToken } =
       await this.authService.signIn(dto);
     return this.sendSuccess(

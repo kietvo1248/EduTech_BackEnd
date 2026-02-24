@@ -13,16 +13,30 @@ export class UsersService extends BaseService {
   }
 
   async create(dto: CreateUserDto | Record<string, unknown>): Promise<User> {
-    return this.userRepository.create({
-      email: (dto as any).email,
-      passwordHash: (dto as any).passwordHash || (dto as any).password,
-      role: (dto as any).role ?? UserRole.Student,
-      avatarUrl: (dto as any).avatarUrl ?? null,
-      isActive: (dto as any).isActive ?? true,
-      emailVerificationStatus: (dto as any).emailVerificationStatus,
-      emailVerificationToken: (dto as any).emailVerificationToken,
-      emailVerificationExpires: (dto as any).emailVerificationExpires,
-    });
+    const typedDto = dto as Partial<CreateUserDto> & Record<string, unknown>;
+
+    const createData: any = {
+      email: typedDto.email as string,
+      passwordHash:
+        (typedDto.passwordHash as string | undefined) || typedDto.password,
+      role: typedDto.role ?? UserRole.Student,
+      avatarUrl: (typedDto.avatarUrl as string | null | undefined) ?? null,
+      isActive: typedDto.isActive ?? true,
+      emailVerificationToken: typedDto.emailVerificationToken,
+      emailVerificationExpires: typedDto.emailVerificationExpires,
+    };
+
+    // Only include verification status if it's not null/undefined
+    const verificationStatus = typedDto.emailVerificationStatus as
+      | string
+      | undefined;
+    if (verificationStatus) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      createData.emailVerificationStatus = verificationStatus;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    return this.userRepository.create(createData);
   }
 
   async findById(id: string): Promise<User | null> {

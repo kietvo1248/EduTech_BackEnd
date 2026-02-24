@@ -219,7 +219,7 @@ export class AuthService {
     this.logger.log(`Email verified for user: ${user.email}`);
     return {
       message: 'Email verified successfully! You can now sign in.',
-      user: updatedUser!,
+      user: updatedUser,
     };
   }
 
