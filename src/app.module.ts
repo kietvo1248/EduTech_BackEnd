@@ -1,16 +1,70 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { AuthModule } from './module/auth/auth.module';
-import { PrismaModule } from '../prisma/prisma.module'; // Import từ file vừa tạo
-import { UsersModule } from './module/users/users.module';
+import { configuration, envValidationSchema } from './config';
+import { DatabaseModule } from './database';
+import { StorageModule } from './storage';
+import { CoreModule } from './core';
+import { HomeModule } from './home';
+import { AuthModule } from './auth';
+import { AuthGoogleModule } from './auth-google';
+import { AuthFacebookModule } from './auth-facebook';
+import { MailModule } from './mail';
+import { MailerModule } from './mailer';
+import { UsersModule } from './users';
+import { SessionModule } from './sessions';
+import { StudentProfileModule } from './student-profiles';
+import { TeacherProfileModule } from './teacher-profiles';
+import { ParentProfileModule } from './parent-profiles';
+import { ParentStudentLinkModule } from './parent-student-links';
+import { SubjectModule } from './subjects';
+import { GradeLevelModule } from './grade-levels';
+import { CourseModule } from './courses';
+import { ChapterModule } from './chapters';
+import { LessonModule } from './lessons';
+import { MaterialModule } from './materials';
+import { QuestionModule } from './questions';
+import { LessonProgressModule } from './lesson-progress';
+import { QuizAttemptModule } from './quiz-attempts';
+import { SubscriptionPlanModule } from './subscription-plans';
+import { UserSubscriptionModule } from './user-subscriptions';
+import { TransactionModule } from './transactions';
+import { NotificationModule } from './notifications';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
-    PrismaModule, // <--- Đăng ký tại đây
-    AuthModule, UsersModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [configuration],
+      validationSchema: envValidationSchema,
+    }),
+    CoreModule,
+    DatabaseModule,
+    StorageModule,
+    MailerModule,
+    AuthModule,
+    AuthGoogleModule,
+    AuthFacebookModule,
+    MailModule,
+    HomeModule,
+    UsersModule,
+    SessionModule,
+    StudentProfileModule,
+    TeacherProfileModule,
+    ParentProfileModule,
+    ParentStudentLinkModule,
+    SubjectModule,
+    GradeLevelModule,
+    CourseModule,
+    ChapterModule,
+    LessonModule,
+    MaterialModule,
+    QuestionModule,
+    LessonProgressModule,
+    QuizAttemptModule,
+    SubscriptionPlanModule,
+    UserSubscriptionModule,
+    TransactionModule,
+    NotificationModule,
   ],
-  controllers: [],
-  providers: [],
 })
 export class AppModule {}

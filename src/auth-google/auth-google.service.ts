@@ -1,0 +1,24 @@
+import { Injectable } from '@nestjs/common';
+import { AuthService } from '../auth/auth.service';
+import { UsersService } from '../users/users.service';
+import { OAuthProfile } from '../auth/interfaces';
+
+@Injectable()
+export class AuthGoogleService {
+  constructor(
+    private readonly authService: AuthService,
+    private readonly usersService: UsersService,
+  ) {}
+
+  async generateTokenFromProfile(profile: OAuthProfile) {
+    const user = await this.usersService.upsertSocialUser({
+      provider: 'google',
+      providerId: profile.id,
+      email: profile.emails?.[0]?.value,
+      displayName: profile.displayName,
+      avatarUrl: profile.photos?.[0]?.value,
+    });
+    const accessToken = this.authService.createAccessToken(user);
+    return { user, accessToken };
+  }
+}

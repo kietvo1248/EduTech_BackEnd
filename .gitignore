@@ -28,6 +28,15 @@ lerna-debug.log*
 .settings/
 *.sublime-workspace
 
+# Environment variables - NEVER commit actual env files
+.env
+.env.local
+.env.*.local
+# Allow example files for reference
+!.env.example
+!.env.development
+!.env.production
+
 # IDE - VSCode
 .vscode/*
 !.vscode/settings.json
@@ -54,5 +63,3 @@ pids
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
-
-/generated/prisma

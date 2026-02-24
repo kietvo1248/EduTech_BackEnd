@@ -1,28 +1,62 @@
+import { config } from 'dotenv';
 import { NestFactory } from '@nestjs/core';
+import { join } from 'path';
+import { Express } from 'express';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
+
+config();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const expressApp = app.getHttpAdapter().getInstance() as Express;
+  const configService = app.get(ConfigService);
 
-  // 1. Validation Setup
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
+  const allowedOrigins = configService.get<string[]>('cors.origin');
+  app.enableCors({
+    origin: allowedOrigins,
+    credentials: true,
+  });
 
-  // 2. CORS (Cho phép Mobile/Web gọi API)
-  app.enableCors();
+  // Configure Handlebars template engine
+  expressApp.set('views', join(process.cwd(), 'views'));
+  expressApp.set('view engine', 'hbs');
 
-  // 3. Swagger Config
-  const config = new DocumentBuilder()
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+      transformOptions: { enableImplicitConversion: true },
+    }),
+  );
+
+  // Set global API prefix from configuration (excludes home module)
+  const apiPrefix = configService.get<string>('api.prefix');
+  const apiVersion = configService.get<string>('api.version');
+  const globalPrefix = `${apiPrefix}/${apiVersion}`;
+
+  // Apply prefix to all routes except home (which is at root /)
+  app.setGlobalPrefix(globalPrefix, {
+    exclude: ['/', '/favicon.ico'],
+  });
+
+  const port = configService.get<number>('PORT') || 3000;
+
+  const apiConfig = new DocumentBuilder()
     .setTitle('EduTech API')
-    .setDescription('API documentation for Mobile App')
-    .setVersion('1.0')
-    .addBearerAuth() // Nút nhập token trên Swagger
+    .setDescription('REST API documentation')
+    .setVersion('1.0.0')
+    .addServer(`http://localhost:${port}`, 'Local Development')
+    .addBearerAuth()
     .build();
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+  const document = SwaggerModule.createDocument(app, apiConfig);
+  SwaggerModule.setup('swagger', app, document);
 
-  await app.listen(process.env.PORT);
+  await app.listen(port);
+  console.log(`Server is running on http://localhost:${port}`);
 }
-bootstrap();
+
+void bootstrap();
