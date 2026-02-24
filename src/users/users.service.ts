@@ -12,13 +12,16 @@ export class UsersService extends BaseService {
     super();
   }
 
-  async create(dto: CreateUserDto): Promise<User> {
+  async create(dto: CreateUserDto | Record<string, unknown>): Promise<User> {
     return this.userRepository.create({
-      email: dto.email,
-      passwordHash: dto.password,
-      role: dto.role ?? UserRole.Student,
-      avatarUrl: dto.avatarUrl ?? null,
-      isActive: dto.isActive ?? true,
+      email: (dto as any).email,
+      passwordHash: (dto as any).passwordHash || (dto as any).password,
+      role: (dto as any).role ?? UserRole.Student,
+      avatarUrl: (dto as any).avatarUrl ?? null,
+      isActive: (dto as any).isActive ?? true,
+      emailVerificationStatus: (dto as any).emailVerificationStatus,
+      emailVerificationToken: (dto as any).emailVerificationToken,
+      emailVerificationExpires: (dto as any).emailVerificationExpires,
     });
   }
 
@@ -30,12 +33,20 @@ export class UsersService extends BaseService {
     return this.userRepository.findByEmail(email);
   }
 
+  async findByVerificationToken(token: string): Promise<User | null> {
+    return this.userRepository.findByVerificationToken(token);
+  }
+
   async findAll(limit?: number, offset?: number): Promise<[User[], number]> {
     return this.userRepository.findAll(limit ?? 10, offset ?? 0);
   }
 
   async update(id: string, dto: UpdateUserDto): Promise<User> {
-    return this.userRepository.update(id, dto);
+    const updatedUser = await this.userRepository.update(id, dto);
+    if (!updatedUser) {
+      throw new Error(`User with id ${id} not found`);
+    }
+    return updatedUser;
   }
 
   async delete(id: string): Promise<void> {

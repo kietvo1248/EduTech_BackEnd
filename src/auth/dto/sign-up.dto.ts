@@ -7,7 +7,7 @@ import {
   IsEnum,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { UserRole } from '../../enums';
+import { UserRole, GradeLevel } from '../../enums';
 
 export class SignUpDto {
   @ApiProperty()
@@ -34,4 +34,13 @@ export class SignUpDto {
   @IsOptional()
   @IsEnum(UserRole)
   role?: UserRole;
+
+  @ApiProperty({
+    enum: GradeLevel,
+    description: 'Grade level from 1 to 12',
+    required: false,
+  })
+  @IsOptional()
+  @IsEnum(GradeLevel)
+  gradeLevel?: GradeLevel;
 }

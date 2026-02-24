@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
-import { UserRole } from '../../../../../enums';
+import { UserRole, EmailVerificationStatus } from '../../../../../enums';
 
 @Schema({ timestamps: true, collection: 'users' })
 export class UserDocument {
@@ -18,6 +18,18 @@ export class UserDocument {
 
   @Prop({ default: true })
   isActive!: boolean;
+
+  @Prop({
+    enum: EmailVerificationStatus,
+    default: EmailVerificationStatus.Pending,
+  })
+  emailVerificationStatus!: EmailVerificationStatus;
+
+  @Prop({ type: String, default: null })
+  emailVerificationToken?: string | null;
+
+  @Prop({ type: Date, default: null })
+  emailVerificationExpires?: Date | null;
 }
 
 export type UserDocumentType = HydratedDocument<UserDocument> & {

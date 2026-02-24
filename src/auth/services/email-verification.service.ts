@@ -13,7 +13,7 @@ export class EmailVerificationService {
     private readonly configService: ConfigService,
   ) {
     this.appUrl =
-      this.configService.get<string>('APP_URL') || 'http://localhost:3000';
+      this.configService.get<string>('APP_URL') || 'http://localhost:8888';
     this.verificationTokenExpirationMinutes =
       this.configService.get<number>('EMAIL_VERIFICATION_EXPIRES_MINUTES') ||
       24 * 60;
@@ -27,9 +27,9 @@ export class EmailVerificationService {
     token: string,
     firstName: string,
   ): Promise<void> {
-    const verificationLink = `${this.appUrl}/auth/verify-email?token=${token}`;
+    const verificationLink = `${this.appUrl}/auth/email/verify?token=${token}`;
 
-    const subject = 'Verify Your Email Address';
+    const subject = '✓ Xác nhận Email - EduTech';
     const html = this.generateVerificationEmailHtml(
       firstName,
       verificationLink,
@@ -68,18 +68,17 @@ export class EmailVerificationService {
         <body>
           <div class="container">
             <div class="header">
-              <div class="title">SoundCloud</div>
+              <div class="title">EduTech</div>
             </div>
             <div class="content">
               <p>Hi ${firstName},</p>
               <p>Thanks for creating an account. Please confirm your email to activate access.</p>
               <p><a href="${verificationLink}" class="button">Verify Email</a></p>
-              <p class="link">${verificationLink}</p>
               <div class="note">This link expires in 24 hours. If this wasn’t you, you can ignore this email.</div>
               <p>Need help? Just reply to this email.</p>
             </div>
             <div class="footer">
-              <p>&copy; ${new Date().getFullYear()} SoundCloud</p>
+              <p>&copy; ${new Date().getFullYear()} EduTech</p>
             </div>
           </div>
         </body>

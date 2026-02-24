@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
+import { GradeLevel } from '../../../../../enums';
 
 @Schema({ timestamps: true, collection: 'student_profiles' })
 export class StudentProfileDocument {
@@ -18,8 +19,8 @@ export class StudentProfileDocument {
   @Prop({ type: String, default: null })
   schoolName?: string | null;
 
-  @Prop({ type: String, default: null })
-  gradeLevel?: string | null;
+  @Prop({ type: String, enum: Object.values(GradeLevel), default: null })
+  gradeLevel?: GradeLevel | null;
 
   @Prop({ default: 0 })
   diamondBalance!: number;

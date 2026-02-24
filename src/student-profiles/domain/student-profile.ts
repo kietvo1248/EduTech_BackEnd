@@ -1,3 +1,5 @@
+import { GradeLevel } from '../../enums';
+
 export interface StudentProfile {
   id: string;
   userId: string;
@@ -5,7 +7,7 @@ export interface StudentProfile {
   gender?: string | null;
   dateOfBirth?: Date | null;
   schoolName?: string | null;
-  gradeLevel?: string | null;
+  gradeLevel?: GradeLevel | null;
   diamondBalance: number;
   xpTotal: number;
   currentStreak: number;

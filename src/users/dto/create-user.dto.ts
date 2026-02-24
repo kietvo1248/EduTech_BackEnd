@@ -9,18 +9,18 @@ import {
   IsBoolean,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { UserRole } from '../../enums';
+import { UserRole, EmailVerificationStatus } from '../../enums';
 
 export class CreateUserDto {
   @ApiProperty({ example: 'user@example.com' })
   @IsEmail()
   email!: string;
 
-  @ApiProperty({ minLength: 8 })
+  @ApiProperty({ minLength: 8, description: 'Plain password for API input' })
   @IsString()
   @IsNotEmpty()
   @MinLength(8)
-  password!: string;
+  password?: string;
 
   @ApiPropertyOptional({ enum: UserRole })
   @IsOptional()
@@ -37,4 +37,18 @@ export class CreateUserDto {
   @IsOptional()
   @IsBoolean()
   isActive?: boolean;
+
+  @ApiPropertyOptional({ enum: EmailVerificationStatus })
+  @IsOptional()
+  @IsEnum(EmailVerificationStatus)
+  emailVerificationStatus?: EmailVerificationStatus | null;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  emailVerificationToken?: string | null;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  emailVerificationExpires?: Date | null;
 }

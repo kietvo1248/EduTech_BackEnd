@@ -1,6 +1,7 @@
 export * from './email-verification-status.enum';
 export * from './user-role.enum';
 export * from './gender.enum';
+export * from './grade-level.enum';
 export * from './subscription-status.enum';
 export * from './question-type.enum';
 export * from './difficulty.enum';

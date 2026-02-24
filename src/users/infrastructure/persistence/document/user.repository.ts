@@ -5,7 +5,7 @@ import { User } from '../../../domain/user';
 import { UserRepositoryAbstract } from './repositories/user.repository.abstract';
 import { UserDocument, UserDocumentType } from './schemas/user.schema';
 import { UserMapper } from './mappers/user.mapper';
-import { UserRole } from '../../../../enums';
+import { UserRole, EmailVerificationStatus } from '../../../../enums';
 
 @Injectable()
 export class UserRepository extends UserRepositoryAbstract {
@@ -24,6 +24,10 @@ export class UserRepository extends UserRepositoryAbstract {
       role: user.role ?? UserRole.Student,
       avatarUrl: user.avatarUrl ?? null,
       isActive: user.isActive ?? true,
+      emailVerificationStatus:
+        user.emailVerificationStatus ?? EmailVerificationStatus.Pending,
+      emailVerificationToken: user.emailVerificationToken ?? null,
+      emailVerificationExpires: user.emailVerificationExpires ?? null,
     });
     return this.mapper.toDomain(created);
   }
@@ -46,14 +50,24 @@ export class UserRepository extends UserRepositoryAbstract {
     return [this.mapper.toDomainArray(docs), total];
   }
 
-  async update(id: string, user: Partial<User>): Promise<User> {
+  async update(id: string, user: Partial<User>): Promise<User | null> {
+    const updateData: Record<string, unknown> = {};
+    if (user.passwordHash !== undefined)
+      updateData.passwordHash = user.passwordHash;
+    if (user.role !== undefined) updateData.role = user.role;
+    if (user.avatarUrl !== undefined) updateData.avatarUrl = user.avatarUrl;
+    if (user.isActive !== undefined) updateData.isActive = user.isActive;
+    if (user.emailVerificationStatus !== undefined)
+      updateData.emailVerificationStatus = user.emailVerificationStatus;
+    if (user.emailVerificationToken !== undefined)
+      updateData.emailVerificationToken = user.emailVerificationToken;
+    if (user.emailVerificationExpires !== undefined)
+      updateData.emailVerificationExpires = user.emailVerificationExpires;
+
     const doc = await this.userModel
-      .findByIdAndUpdate(id, user, { new: true })
+      .findByIdAndUpdate(id, updateData as any, { new: true })
       .exec();
-    if (!doc) {
-      throw new NotFoundException('User not found');
-    }
-    return this.mapper.toDomain(doc);
+    return doc ? this.mapper.toDomain(doc) : null;
   }
 
   async delete(id: string): Promise<void> {
@@ -62,6 +76,13 @@ export class UserRepository extends UserRepositoryAbstract {
 
   async findByEmail(email: string): Promise<User | null> {
     const doc = await this.userModel.findOne({ email }).exec();
+    return doc ? this.mapper.toDomain(doc) : null;
+  }
+
+  async findByVerificationToken(token: string): Promise<User | null> {
+    const doc = await this.userModel
+      .findOne({ emailVerificationToken: token })
+      .exec();
     return doc ? this.mapper.toDomain(doc) : null;
   }
 }

@@ -7,12 +7,17 @@ import { AuthController } from './auth.controller';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { RolesGuard } from './guards/roles.guard';
 import { UsersModule } from '../users/users.module';
+import { StudentProfileModule } from '../student-profiles/student-profile.module';
+import { EmailVerificationService } from './services/email-verification.service';
+import { MailerModule } from '../mailer';
 
 @Module({
   imports: [
     UsersModule,
+    StudentProfileModule,
     PassportModule,
     ConfigModule,
+    MailerModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -22,7 +27,7 @@ import { UsersModule } from '../users/users.module';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, RolesGuard],
+  providers: [AuthService, JwtStrategy, RolesGuard, EmailVerificationService],
   exports: [AuthService],
 })
 export class AuthModule {}
