@@ -1,91 +1,90 @@
-# SoundCloud Clone REST API
+# EduTech Backend API
 
 ## Requirements
 
-- node --version: v20.0+
-- bun --version: v1.0+
-- install node and bun
-- create file .env with required fields:
-  - NODE_ENV: development
-  - PORT: 8888
-  - APP_URL: http://localhost:8888
-  - POSTGRES_HOST: localhost
-  - POSTGRES_PORT: 5432
-  - POSTGRES_USER: your_postgres_user
-  - POSTGRES_PASSWORD: your_postgres_password
-  - POSTGRES_DB: your_database_name
-  - POSTGRES_SSL: false
-  - REDIS_HOST: localhost
-  - REDIS_PORT: 6379
-  - REDIS_PASSWORD: your_redis_password (optional)
-  - MINIO_ENDPOINT: localhost
-  - MINIO_PORT: 9000
-  - MINIO_ACCESS_KEY: minioadmin
-  - MINIO_SECRET_KEY: minioadmin
-  - MINIO_BUCKET: tracks
-  - MINIO_USE_SSL: false
-  - AWS_REGION: your_aws_region (optional)
-  - AWS_ACCESS_KEY_ID: your_aws_key (optional)
-  - AWS_SECRET_ACCESS_KEY: your_aws_secret (optional)
-  - AWS_S3_BUCKET: your_s3_bucket (optional)
-  - FFMPEG_PATH: (optional)
-  - FFPROBE_PATH: (optional)
-  - GOOGLE_CLIENT_ID: your_google_client_id (optional)
-  - GOOGLE_CLIENT_SECRET: your_google_secret (optional)
-  - GOOGLE_CALLBACK_URL: http://localhost:8888/auth/google/callback
-  - FACEBOOK_APP_ID: your_facebook_app_id (optional)
-  - FACEBOOK_APP_SECRET: your_facebook_secret (optional)
-  - FACEBOOK_CALLBACK_URL: http://localhost:8888/auth/facebook/callback
-  - JWT_SECRET: your_jwt_secret
-  - CORS_ORIGIN: http://localhost:3000,http://localhost:8888
-  - UPLOAD_FREE_MINUTES: 180
-  - UPLOAD_PRO_MINUTES: 0
-  - UPLOAD_MAX_FILE_SIZE_BYTES: 4294967296
-  - SMTP_HOST: smtp.gmail.com (optional)
-  - SMTP_PORT: 587 (optional)
-  - SMTP_SECURE: true (optional)
-  - SMTP_USER: your_email@gmail.com (optional)
-  - SMTP_PASS: your_email_password (optional)
-  - SMTP_FROM_EMAIL: YourApp <no-reply@yourapp.com> (optional)
+- Node.js v20.0+
+- Bun v1.0+
+- MongoDB 6.0+
 
-## Running the project
-
-### Docker (One file - Development & Production)
-
-**Development - Start with hot reload:**
+## Installation
 
 ```bash
-docker compose up
+bun install
 ```
 
-**Production - Build optimized image:**
+Create a `.env` file in the root directory with the following variables:
+
+```env
+# Application
+NODE_ENV=development
+PORT=8888
+APP_URL=http://localhost:8888
+FRONTEND_URL=http://localhost:3000
+CORS_ORIGIN=http://localhost:3000,http://localhost:8888
+
+# Database
+MONGO_URI=mongodb://localhost:27017/edutech
+# Or use MongoDB Atlas:
+# MONGO_URI=mongodb+srv://username:password@cluster.mongodb.net/edutech
+
+# JWT
+JWT_SECRET=your_jwt_secret_key_here
+JWT_EXPIRES_IN=7d
+REFRESH_TOKEN_SECRET=your_refresh_token_secret_here
+REFRESH_TOKEN_EXPIRES_IN=30d
+
+# Google OAuth (optional)
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+GOOGLE_CALLBACK_URL=http://localhost:8888/auth-google/callback
+
+# Facebook OAuth (optional)
+FACEBOOK_APP_ID=your_facebook_app_id
+FACEBOOK_APP_SECRET=your_facebook_app_secret
+FACEBOOK_CALLBACK_URL=http://localhost:8888/auth-facebook/callback
+
+# Email (optional)
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=your_email@gmail.com
+SMTP_PASS=your_app_password
+SMTP_FROM_EMAIL=EduTech <no-reply@edutech.com>
+
+# Cloudinary (optional)
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+```
+
+## Running the Application
 
 ```bash
-docker compose up -d --build
+# Run with hot reload
+bun start:dev
+
+# Run with debug mode
+bun run start:debug
 ```
 
-**Commands:**
+### Production
 
 ```bash
-docker compose logs -f app        # View logs
-docker compose restart app         # Restart app
-docker compose down                # Stop all services
-docker compose down -v             # Stop and remove volumes
+# Build application
+bun run build
+
+# Run production server
+bun run start:prod
 ```
 
-**Access services:**
+## API Documentation
 
-- API: http://localhost:8888
-- MinIO Console: http://localhost:9001 (minioadmin/minioadmin)
+After running the application, visit:
 
-### Migrations
-
-- bun run migration:generate src/database/migrations/MigrationName: generate migration from entities
-- bun run migration:create src/database/migrations/MigrationName: create empty migration
-- bun run migration:run: run pending migrations
-- bun run migration:revert: revert last migration
-- bun run migration:show: show all migrations
+- Swagger UI: http://localhost:8888/swagger
 
 ## References
 
 - [NestJS Documentation](https://docs.nestjs.com)
+- [Mongoose Documentation](https://mongoosejs.com/docs/)
+- [MODULE_RULES.md](./docs/MODULE_RULES.md) - Module development rules
