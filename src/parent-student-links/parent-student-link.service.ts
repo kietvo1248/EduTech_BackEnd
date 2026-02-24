@@ -4,9 +4,13 @@ import { ParentStudentLink } from './domain/parent-student-link';
 
 @Injectable()
 export class ParentStudentLinkService {
-  constructor(private readonly parentStudentLinkRepository: ParentStudentLinkRepositoryAbstract) {}
+  constructor(
+    private readonly parentStudentLinkRepository: ParentStudentLinkRepositoryAbstract,
+  ) {}
 
-  async createLink(data: Omit<ParentStudentLink, 'id' | 'createdAt'>): Promise<ParentStudentLink> {
+  async createLink(
+    data: Omit<ParentStudentLink, 'id' | 'createdAt'>,
+  ): Promise<ParentStudentLink> {
     return this.parentStudentLinkRepository.create(data);
   }
 
@@ -18,7 +22,10 @@ export class ParentStudentLinkService {
     return this.parentStudentLinkRepository.findAll();
   }
 
-  async updateLink(id: string, data: Partial<ParentStudentLink>): Promise<ParentStudentLink | null> {
+  async updateLink(
+    id: string,
+    data: Partial<ParentStudentLink>,
+  ): Promise<ParentStudentLink | null> {
     return this.parentStudentLinkRepository.update(id, data);
   }
 
@@ -34,15 +41,25 @@ export class ParentStudentLinkService {
     return this.parentStudentLinkRepository.findByStudentId(studentId);
   }
 
-  async getLinkByParentAndStudent(parentId: string, studentId: string): Promise<ParentStudentLink | null> {
-    return this.parentStudentLinkRepository.findByParentAndStudent(parentId, studentId);
+  async getLinkByParentAndStudent(
+    parentId: string,
+    studentId: string,
+  ): Promise<ParentStudentLink | null> {
+    return this.parentStudentLinkRepository.findByParentAndStudent(
+      parentId,
+      studentId,
+    );
   }
 
-  async getVerifiedStudentsByParentId(parentId: string): Promise<ParentStudentLink[]> {
+  async getVerifiedStudentsByParentId(
+    parentId: string,
+  ): Promise<ParentStudentLink[]> {
     return this.parentStudentLinkRepository.findVerifiedByParentId(parentId);
   }
 
-  async getVerifiedParentsByStudentId(studentId: string): Promise<ParentStudentLink[]> {
+  async getVerifiedParentsByStudentId(
+    studentId: string,
+  ): Promise<ParentStudentLink[]> {
     return this.parentStudentLinkRepository.findVerifiedByStudentId(studentId);
   }
 
@@ -50,12 +67,19 @@ export class ParentStudentLinkService {
     return this.updateLink(id, { isVerified: true });
   }
 
-  async filterLinks(filters: Partial<ParentStudentLink>): Promise<ParentStudentLink[]> {
+  async filterLinks(
+    filters: Partial<ParentStudentLink>,
+  ): Promise<ParentStudentLink[]> {
     const allLinks = await this.getAllLinks();
     return allLinks.filter((link) => {
       if (filters.parentId && link.parentId !== filters.parentId) return false;
-      if (filters.studentId && link.studentId !== filters.studentId) return false;
-      if (filters.isVerified !== undefined && link.isVerified !== filters.isVerified) return false;
+      if (filters.studentId && link.studentId !== filters.studentId)
+        return false;
+      if (
+        filters.isVerified !== undefined &&
+        link.isVerified !== filters.isVerified
+      )
+        return false;
       return true;
     });
   }

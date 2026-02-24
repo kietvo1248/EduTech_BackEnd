@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { SubscriptionPlanDocument, SubscriptionPlanDocumentType } from '../schemas/subscription-plan.schema';
+import {
+  SubscriptionPlanDocument,
+  SubscriptionPlanDocumentType,
+} from '../schemas/subscription-plan.schema';
 import { SubscriptionPlanRepositoryAbstract } from './subscription-plan.repository.abstract';
 import { SubscriptionPlanMapper } from '../mappers/subscription-plan.mapper';
 import { SubscriptionPlan } from '../../../../domain/subscription-plan';
@@ -24,7 +27,9 @@ export class SubscriptionPlanRepository implements SubscriptionPlanRepositoryAbs
     return this.mapper.toDomainArray(docs);
   }
 
-  async create(data: Omit<SubscriptionPlan, 'id' | 'createdAt' | 'updatedAt'>): Promise<SubscriptionPlan> {
+  async create(
+    data: Omit<SubscriptionPlan, 'id' | 'createdAt' | 'updatedAt'>,
+  ): Promise<SubscriptionPlan> {
     const doc = await this.subscriptionPlanModel.create({
       name: data.name,
       price: data.price,
@@ -34,16 +39,23 @@ export class SubscriptionPlanRepository implements SubscriptionPlanRepositoryAbs
     return this.mapper.toDomain(doc);
   }
 
-  async update(id: string, data: Partial<SubscriptionPlan>): Promise<SubscriptionPlan | null> {
-    const updateData: any = {};
+  async update(
+    id: string,
+    data: Partial<SubscriptionPlan>,
+  ): Promise<SubscriptionPlan | null> {
+    const updateData: Record<string, unknown> = {};
     if (data.name) updateData.name = data.name;
     if (data.price !== undefined) updateData.price = data.price;
     if (data.durationDays) updateData.durationDays = data.durationDays;
     if (data.features) updateData.features = data.features;
 
-    const doc = await this.subscriptionPlanModel.findByIdAndUpdate(id, updateData, {
-      new: true,
-    });
+    const doc = await this.subscriptionPlanModel.findByIdAndUpdate(
+      id,
+      updateData as any,
+      {
+        new: true,
+      },
+    );
     return doc ? this.mapper.toDomain(doc) : null;
   }
 

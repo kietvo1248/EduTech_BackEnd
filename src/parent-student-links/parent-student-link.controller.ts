@@ -1,9 +1,20 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Param,
+  Body,
+  Query,
+} from '@nestjs/common';
 import { ParentStudentLinkService } from './parent-student-link.service';
 
 @Controller('parent-student-links')
 export class ParentStudentLinkController {
-  constructor(private readonly parentStudentLinkService: ParentStudentLinkService) {}
+  constructor(
+    private readonly parentStudentLinkService: ParentStudentLinkService,
+  ) {}
 
   @Get('parent/:parentId')
   async getStudentsByParentId(@Param('parentId') parentId: string) {
@@ -12,7 +23,9 @@ export class ParentStudentLinkController {
 
   @Get('parent/:parentId/verified')
   async getVerifiedStudentsByParentId(@Param('parentId') parentId: string) {
-    return this.parentStudentLinkService.getVerifiedStudentsByParentId(parentId);
+    return this.parentStudentLinkService.getVerifiedStudentsByParentId(
+      parentId,
+    );
   }
 
   @Get('student/:studentId')
@@ -22,12 +35,20 @@ export class ParentStudentLinkController {
 
   @Get('student/:studentId/verified')
   async getVerifiedParentsByStudentId(@Param('studentId') studentId: string) {
-    return this.parentStudentLinkService.getVerifiedParentsByStudentId(studentId);
+    return this.parentStudentLinkService.getVerifiedParentsByStudentId(
+      studentId,
+    );
   }
 
   @Get(':parentId/:studentId')
-  async getLinkByParentAndStudent(@Param('parentId') parentId: string, @Param('studentId') studentId: string) {
-    return this.parentStudentLinkService.getLinkByParentAndStudent(parentId, studentId);
+  async getLinkByParentAndStudent(
+    @Param('parentId') parentId: string,
+    @Param('studentId') studentId: string,
+  ) {
+    return this.parentStudentLinkService.getLinkByParentAndStudent(
+      parentId,
+      studentId,
+    );
   }
 
   @Get(':id')

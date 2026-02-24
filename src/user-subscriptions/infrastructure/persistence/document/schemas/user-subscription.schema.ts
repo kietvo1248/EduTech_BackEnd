@@ -15,13 +15,20 @@ export class UserSubscriptionDocument {
   @Prop({ required: true })
   endDate!: Date;
 
-  @Prop({ required: true, enum: ['ACTIVE', 'EXPIRED', 'CANCELLED'], default: 'ACTIVE' })
+  @Prop({
+    required: true,
+    enum: ['ACTIVE', 'EXPIRED', 'CANCELLED'],
+    default: 'ACTIVE',
+  })
   status!: string;
 }
 
-export type UserSubscriptionDocumentType = HydratedDocument<UserSubscriptionDocument> & {
-  createdAt: Date;
-  updatedAt: Date;
-};
+export type UserSubscriptionDocumentType =
+  HydratedDocument<UserSubscriptionDocument> & {
+    createdAt: Date;
+    updatedAt: Date;
+  };
 
-export const UserSubscriptionSchema = SchemaFactory.createForClass(UserSubscriptionDocument);
+export const UserSubscriptionSchema = SchemaFactory.createForClass(
+  UserSubscriptionDocument,
+);

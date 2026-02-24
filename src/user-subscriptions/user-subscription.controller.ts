@@ -1,9 +1,19 @@
-import { Controller, Get, Post, Put, Delete, Param, Body } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Param,
+  Body,
+} from '@nestjs/common';
 import { UserSubscriptionService } from './user-subscription.service';
 
 @Controller('user-subscriptions')
 export class UserSubscriptionController {
-  constructor(private readonly userSubscriptionService: UserSubscriptionService) {}
+  constructor(
+    private readonly userSubscriptionService: UserSubscriptionService,
+  ) {}
 
   @Get('user/:userId')
   async getByUserId(@Param('userId') userId: string) {
@@ -25,7 +35,8 @@ export class UserSubscriptionController {
 
   @Get('user/:userId/is-valid')
   async isValid(@Param('userId') userId: string) {
-    const isValid = await this.userSubscriptionService.isSubscriptionValid(userId);
+    const isValid =
+      await this.userSubscriptionService.isSubscriptionValid(userId);
     return { isValid };
   }
 

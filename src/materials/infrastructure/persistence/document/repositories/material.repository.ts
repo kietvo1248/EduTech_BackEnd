@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { MaterialDocument, MaterialDocumentType } from '../schemas/material.schema';
+import {
+  MaterialDocument,
+  MaterialDocumentType,
+} from '../schemas/material.schema';
 import { MaterialRepositoryAbstract } from './material.repository.abstract';
 import { MaterialMapper } from '../mappers/material.mapper';
 import { Material } from '../../../../domain/material';
@@ -24,7 +27,9 @@ export class MaterialRepository implements MaterialRepositoryAbstract {
     return this.mapper.toDomainArray(docs);
   }
 
-  async create(data: Omit<Material, 'id' | 'createdAt' | 'updatedAt'>): Promise<Material> {
+  async create(
+    data: Omit<Material, 'id' | 'createdAt' | 'updatedAt'>,
+  ): Promise<Material> {
     const doc = await this.materialModel.create({
       lessonId: new Types.ObjectId(data.lessonId),
       title: data.title,
@@ -35,15 +40,19 @@ export class MaterialRepository implements MaterialRepositoryAbstract {
   }
 
   async update(id: string, data: Partial<Material>): Promise<Material | null> {
-    const updateData: any = {};
+    const updateData: Record<string, unknown> = {};
     if (data.lessonId) updateData.lessonId = new Types.ObjectId(data.lessonId);
     if (data.title) updateData.title = data.title;
     if (data.fileUrl) updateData.fileUrl = data.fileUrl;
     if (data.type) updateData.type = data.type;
 
-    const doc = await this.materialModel.findByIdAndUpdate(id, updateData, {
-      new: true,
-    });
+    const doc = await this.materialModel.findByIdAndUpdate(
+      id,
+      updateData as any,
+      {
+        new: true,
+      },
+    );
     return doc ? this.mapper.toDomain(doc) : null;
   }
 

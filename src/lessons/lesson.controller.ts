@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Put, Delete, Param, Body } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Param,
+  Body,
+} from '@nestjs/common';
 import { LessonService } from './lesson.service';
 
 @Controller('lessons')
@@ -31,7 +39,10 @@ export class LessonController {
   }
 
   @Put(':id/duration/:seconds')
-  async updateDuration(@Param('id') id: string, @Param('seconds') seconds: string) {
+  async updateDuration(
+    @Param('id') id: string,
+    @Param('seconds') seconds: string,
+  ) {
     return this.lessonService.updateDuration(id, parseInt(seconds));
   }
 

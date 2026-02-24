@@ -18,7 +18,11 @@ export class TransactionDocument {
   @Prop({ required: true, unique: true })
   providerRefId!: string;
 
-  @Prop({ required: true, enum: ['PENDING', 'SUCCESS', 'FAILED'], default: 'PENDING' })
+  @Prop({
+    required: true,
+    enum: ['PENDING', 'SUCCESS', 'FAILED'],
+    default: 'PENDING',
+  })
   status!: string;
 }
 
@@ -27,4 +31,5 @@ export type TransactionDocumentType = HydratedDocument<TransactionDocument> & {
   updatedAt: Date;
 };
 
-export const TransactionSchema = SchemaFactory.createForClass(TransactionDocument);
+export const TransactionSchema =
+  SchemaFactory.createForClass(TransactionDocument);

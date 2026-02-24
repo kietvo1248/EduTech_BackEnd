@@ -1,6 +1,9 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { LessonDocument, LessonSchema } from './infrastructure/persistence/document/schemas/lesson.schema';
+import {
+  LessonDocument,
+  LessonSchema,
+} from './infrastructure/persistence/document/schemas/lesson.schema';
 import { LessonRepository } from './infrastructure/persistence/document/repositories/lesson.repository';
 import { LessonRepositoryAbstract } from './infrastructure/persistence/document/repositories/lesson.repository.abstract';
 import { LessonMapper } from './infrastructure/persistence/document/mappers/lesson.mapper';

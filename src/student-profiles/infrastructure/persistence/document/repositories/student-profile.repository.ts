@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { StudentProfileDocument, StudentProfileDocumentType } from '../schemas/student-profile.schema';
+import {
+  StudentProfileDocument,
+  StudentProfileDocumentType,
+} from '../schemas/student-profile.schema';
 import { StudentProfileRepositoryAbstract } from './student-profile.repository.abstract';
 import { StudentProfileMapper } from '../mappers/student-profile.mapper';
 import { StudentProfile } from '../../../../domain/student-profile';
@@ -24,7 +27,9 @@ export class StudentProfileRepository implements StudentProfileRepositoryAbstrac
     return this.mapper.toDomainArray(docs);
   }
 
-  async create(data: Omit<StudentProfile, 'id' | 'createdAt' | 'updatedAt'>): Promise<StudentProfile> {
+  async create(
+    data: Omit<StudentProfile, 'id' | 'createdAt' | 'updatedAt'>,
+  ): Promise<StudentProfile> {
     const doc = await this.studentProfileModel.create({
       userId: new Types.ObjectId(data.userId),
       fullName: data.fullName,
@@ -39,21 +44,30 @@ export class StudentProfileRepository implements StudentProfileRepositoryAbstrac
     return this.mapper.toDomain(doc);
   }
 
-  async update(id: string, data: Partial<StudentProfile>): Promise<StudentProfile | null> {
-    const updateData: any = {};
+  async update(
+    id: string,
+    data: Partial<StudentProfile>,
+  ): Promise<StudentProfile | null> {
+    const updateData: Record<string, unknown> = {};
     if (data.userId) updateData.userId = new Types.ObjectId(data.userId);
     if (data.fullName) updateData.fullName = data.fullName;
     if (data.gender !== undefined) updateData.gender = data.gender;
     if (data.dateOfBirth) updateData.dateOfBirth = data.dateOfBirth;
     if (data.schoolName !== undefined) updateData.schoolName = data.schoolName;
     if (data.gradeLevel !== undefined) updateData.gradeLevel = data.gradeLevel;
-    if (data.diamondBalance !== undefined) updateData.diamondBalance = data.diamondBalance;
+    if (data.diamondBalance !== undefined)
+      updateData.diamondBalance = data.diamondBalance;
     if (data.xpTotal !== undefined) updateData.xpTotal = data.xpTotal;
-    if (data.currentStreak !== undefined) updateData.currentStreak = data.currentStreak;
+    if (data.currentStreak !== undefined)
+      updateData.currentStreak = data.currentStreak;
 
-    const doc = await this.studentProfileModel.findByIdAndUpdate(id, updateData, {
-      new: true,
-    });
+    const doc = await this.studentProfileModel.findByIdAndUpdate(
+      id,
+      updateData as any,
+      {
+        new: true,
+      },
+    );
     return doc ? this.mapper.toDomain(doc) : null;
   }
 

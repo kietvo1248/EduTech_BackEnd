@@ -6,7 +6,9 @@ import { Session } from './domain/session';
 export class SessionService {
   constructor(private readonly sessionRepository: SessionRepositoryAbstract) {}
 
-  async createSession(data: Omit<Session, 'id' | 'createdAt'>): Promise<Session> {
+  async createSession(
+    data: Omit<Session, 'id' | 'createdAt'>,
+  ): Promise<Session> {
     return this.sessionRepository.create(data);
   }
 
@@ -26,11 +28,17 @@ export class SessionService {
     return this.sessionRepository.deleteByUserId(userId);
   }
 
-  async updateSession(id: string, data: Partial<Session>): Promise<Session | null> {
+  async updateSession(
+    id: string,
+    data: Partial<Session>,
+  ): Promise<Session | null> {
     return this.sessionRepository.update(id, data);
   }
 
-  async validateRefreshToken(userId: string, hashedRt: string): Promise<Session | null> {
+  async validateRefreshToken(
+    userId: string,
+    hashedRt: string,
+  ): Promise<Session | null> {
     return this.sessionRepository.findByUserIdAndToken(userId, hashedRt);
   }
 }

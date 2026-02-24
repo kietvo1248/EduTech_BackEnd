@@ -1,6 +1,9 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { SubjectDocument, SubjectSchema } from './infrastructure/persistence/document/schemas/subject.schema';
+import {
+  SubjectDocument,
+  SubjectSchema,
+} from './infrastructure/persistence/document/schemas/subject.schema';
 import { SubjectRepository } from './infrastructure/persistence/document/repositories/subject.repository';
 import { SubjectRepositoryAbstract } from './infrastructure/persistence/document/repositories/subject.repository.abstract';
 import { SubjectMapper } from './infrastructure/persistence/document/mappers/subject.mapper';

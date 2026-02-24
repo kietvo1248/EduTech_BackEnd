@@ -1,6 +1,9 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { QuizAttemptDocument, QuizAttemptSchema } from './infrastructure/persistence/document/schemas/quiz-attempt.schema';
+import {
+  QuizAttemptDocument,
+  QuizAttemptSchema,
+} from './infrastructure/persistence/document/schemas/quiz-attempt.schema';
 import { QuizAttemptRepository } from './infrastructure/persistence/document/repositories/quiz-attempt.repository';
 import { QuizAttemptRepositoryAbstract } from './infrastructure/persistence/document/repositories/quiz-attempt.repository.abstract';
 import { QuizAttemptMapper } from './infrastructure/persistence/document/mappers/quiz-attempt.mapper';

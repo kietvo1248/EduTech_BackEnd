@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Put, Delete, Param, Body } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Param,
+  Body,
+} from '@nestjs/common';
 import { LessonProgressService } from './lesson-progress.service';
 
 @Controller('lesson-progress')
@@ -20,7 +28,10 @@ export class LessonProgressController {
     @Param('userId') userId: string,
     @Param('lessonId') lessonId: string,
   ) {
-    return this.lessonProgressService.getProgressByUserAndLesson(userId, lessonId);
+    return this.lessonProgressService.getProgressByUserAndLesson(
+      userId,
+      lessonId,
+    );
   }
 
   @Get(':id')
@@ -49,7 +60,11 @@ export class LessonProgressController {
     @Param('lessonId') lessonId: string,
     @Body('seconds') seconds: number,
   ) {
-    return this.lessonProgressService.updateWatchedTime(userId, lessonId, seconds);
+    return this.lessonProgressService.updateWatchedTime(
+      userId,
+      lessonId,
+      seconds,
+    );
   }
 
   @Put('user/:userId/lesson/:lessonId/complete')

@@ -19,8 +19,10 @@ export class NotificationDocument {
   type!: string;
 }
 
-export type NotificationDocumentType = HydratedDocument<NotificationDocument> & {
-  createdAt: Date;
-};
+export type NotificationDocumentType =
+  HydratedDocument<NotificationDocument> & {
+    createdAt: Date;
+  };
 
-export const NotificationSchema = SchemaFactory.createForClass(NotificationDocument);
+export const NotificationSchema =
+  SchemaFactory.createForClass(NotificationDocument);

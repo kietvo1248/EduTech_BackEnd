@@ -1,9 +1,19 @@
-import { Controller, Get, Post, Put, Delete, Param, Body } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Param,
+  Body,
+} from '@nestjs/common';
 import { SubscriptionPlanService } from './subscription-plan.service';
 
 @Controller('subscription-plans')
 export class SubscriptionPlanController {
-  constructor(private readonly subscriptionPlanService: SubscriptionPlanService) {}
+  constructor(
+    private readonly subscriptionPlanService: SubscriptionPlanService,
+  ) {}
 
   @Get('name/:name')
   async getPlanByName(@Param('name') name: string) {

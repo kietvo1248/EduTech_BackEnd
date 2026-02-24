@@ -6,7 +6,9 @@ import { Subject } from './domain/subject';
 export class SubjectService {
   constructor(private readonly subjectRepository: SubjectRepositoryAbstract) {}
 
-  async createSubject(data: Omit<Subject, 'id' | 'createdAt' | 'updatedAt'>): Promise<Subject> {
+  async createSubject(
+    data: Omit<Subject, 'id' | 'createdAt' | 'updatedAt'>,
+  ): Promise<Subject> {
     return this.subjectRepository.create(data);
   }
 
@@ -18,7 +20,10 @@ export class SubjectService {
     return this.subjectRepository.findAll();
   }
 
-  async updateSubject(id: string, data: Partial<Subject>): Promise<Subject | null> {
+  async updateSubject(
+    id: string,
+    data: Partial<Subject>,
+  ): Promise<Subject | null> {
     return this.subjectRepository.update(id, data);
   }
 

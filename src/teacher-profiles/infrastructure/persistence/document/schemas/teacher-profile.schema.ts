@@ -13,9 +13,12 @@ export class TeacherProfileDocument {
   bio?: string | null;
 }
 
-export type TeacherProfileDocumentType = HydratedDocument<TeacherProfileDocument> & {
-  createdAt: Date;
-  updatedAt: Date;
-};
+export type TeacherProfileDocumentType =
+  HydratedDocument<TeacherProfileDocument> & {
+    createdAt: Date;
+    updatedAt: Date;
+  };
 
-export const TeacherProfileSchema = SchemaFactory.createForClass(TeacherProfileDocument);
+export const TeacherProfileSchema = SchemaFactory.createForClass(
+  TeacherProfileDocument,
+);

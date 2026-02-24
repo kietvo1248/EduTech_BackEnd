@@ -4,9 +4,13 @@ import { Question } from './domain/question';
 
 @Injectable()
 export class QuestionService {
-  constructor(private readonly questionRepository: QuestionRepositoryAbstract) {}
+  constructor(
+    private readonly questionRepository: QuestionRepositoryAbstract,
+  ) {}
 
-  async createQuestion(data: Omit<Question, 'id' | 'createdAt' | 'updatedAt'>): Promise<Question> {
+  async createQuestion(
+    data: Omit<Question, 'id' | 'createdAt' | 'updatedAt'>,
+  ): Promise<Question> {
     return this.questionRepository.create(data);
   }
 
@@ -18,7 +22,10 @@ export class QuestionService {
     return this.questionRepository.findAll();
   }
 
-  async updateQuestion(id: string, data: Partial<Question>): Promise<Question | null> {
+  async updateQuestion(
+    id: string,
+    data: Partial<Question>,
+  ): Promise<Question | null> {
     return this.questionRepository.update(id, data);
   }
 

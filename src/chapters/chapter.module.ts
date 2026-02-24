@@ -1,6 +1,9 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { ChapterDocument, ChapterSchema } from './infrastructure/persistence/document/schemas/chapter.schema';
+import {
+  ChapterDocument,
+  ChapterSchema,
+} from './infrastructure/persistence/document/schemas/chapter.schema';
 import { ChapterRepository } from './infrastructure/persistence/document/repositories/chapter.repository';
 import { ChapterRepositoryAbstract } from './infrastructure/persistence/document/repositories/chapter.repository.abstract';
 import { ChapterMapper } from './infrastructure/persistence/document/mappers/chapter.mapper';

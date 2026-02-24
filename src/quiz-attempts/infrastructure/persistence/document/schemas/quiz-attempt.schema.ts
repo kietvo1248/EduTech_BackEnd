@@ -23,4 +23,5 @@ export type QuizAttemptDocumentType = HydratedDocument<QuizAttemptDocument> & {
   createdAt: Date;
 };
 
-export const QuizAttemptSchema = SchemaFactory.createForClass(QuizAttemptDocument);
+export const QuizAttemptSchema =
+  SchemaFactory.createForClass(QuizAttemptDocument);

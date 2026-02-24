@@ -6,7 +6,9 @@ import { Lesson } from './domain/lesson';
 export class LessonService {
   constructor(private readonly lessonRepository: LessonRepositoryAbstract) {}
 
-  async createLesson(data: Omit<Lesson, 'id' | 'createdAt' | 'updatedAt'>): Promise<Lesson> {
+  async createLesson(
+    data: Omit<Lesson, 'id' | 'createdAt' | 'updatedAt'>,
+  ): Promise<Lesson> {
     return this.lessonRepository.create(data);
   }
 
@@ -18,7 +20,10 @@ export class LessonService {
     return this.lessonRepository.findAll();
   }
 
-  async updateLesson(id: string, data: Partial<Lesson>): Promise<Lesson | null> {
+  async updateLesson(
+    id: string,
+    data: Partial<Lesson>,
+  ): Promise<Lesson | null> {
     return this.lessonRepository.update(id, data);
   }
 
@@ -30,7 +35,10 @@ export class LessonService {
     return this.lessonRepository.findByChapterId(chapterId);
   }
 
-  async updateDuration(id: string, durationSeconds: number): Promise<Lesson | null> {
+  async updateDuration(
+    id: string,
+    durationSeconds: number,
+  ): Promise<Lesson | null> {
     return this.updateLesson(id, { durationSeconds } as Partial<Lesson>);
   }
 }

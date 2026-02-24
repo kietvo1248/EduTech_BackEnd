@@ -24,7 +24,9 @@ export class LessonRepository implements LessonRepositoryAbstract {
     return this.mapper.toDomainArray(docs);
   }
 
-  async create(data: Omit<Lesson, 'id' | 'createdAt' | 'updatedAt'>): Promise<Lesson> {
+  async create(
+    data: Omit<Lesson, 'id' | 'createdAt' | 'updatedAt'>,
+  ): Promise<Lesson> {
     const doc = await this.lessonModel.create({
       chapterId: new Types.ObjectId(data.chapterId),
       title: data.title,
@@ -39,19 +41,26 @@ export class LessonRepository implements LessonRepositoryAbstract {
   }
 
   async update(id: string, data: Partial<Lesson>): Promise<Lesson | null> {
-    const updateData: any = {};
-    if (data.chapterId) updateData.chapterId = new Types.ObjectId(data.chapterId);
+    const updateData: Record<string, unknown> = {};
+    if (data.chapterId)
+      updateData.chapterId = new Types.ObjectId(data.chapterId);
     if (data.title) updateData.title = data.title;
-    if (data.description !== undefined) updateData.description = data.description;
+    if (data.description !== undefined)
+      updateData.description = data.description;
     if (data.orderIndex !== undefined) updateData.orderIndex = data.orderIndex;
-    if (data.durationSeconds !== undefined) updateData.durationSeconds = data.durationSeconds;
+    if (data.durationSeconds !== undefined)
+      updateData.durationSeconds = data.durationSeconds;
     if (data.videoUrl) updateData.videoUrl = data.videoUrl;
     if (data.contentMd !== undefined) updateData.contentMd = data.contentMd;
     if (data.isPreview !== undefined) updateData.isPreview = data.isPreview;
 
-    const doc = await this.lessonModel.findByIdAndUpdate(id, updateData, {
-      new: true,
-    });
+    const doc = await this.lessonModel.findByIdAndUpdate(
+      id,
+      updateData as any,
+      {
+        new: true,
+      },
+    );
     return doc ? this.mapper.toDomain(doc) : null;
   }
 

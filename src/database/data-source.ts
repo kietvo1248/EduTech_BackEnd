@@ -5,7 +5,7 @@ import { getDatabaseConfig } from '../config/configuration';
 
 config();
 
-const { mongoUri: _mongoUri, ...dbConfig } = getDatabaseConfig();
+const dbConfig = getDatabaseConfig();
 
 export const dataSourceOptions: DataSourceOptions = {
   type: 'postgres',

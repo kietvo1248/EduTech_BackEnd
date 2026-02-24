@@ -4,9 +4,13 @@ import { Transaction } from './domain/transaction';
 
 @Injectable()
 export class TransactionService {
-  constructor(private readonly transactionRepository: TransactionRepositoryAbstract) {}
+  constructor(
+    private readonly transactionRepository: TransactionRepositoryAbstract,
+  ) {}
 
-  async recordTransaction(data: Omit<Transaction, 'id' | 'createdAt' | 'updatedAt'>): Promise<Transaction> {
+  async recordTransaction(
+    data: Omit<Transaction, 'id' | 'createdAt' | 'updatedAt'>,
+  ): Promise<Transaction> {
     return this.transactionRepository.create(data);
   }
 
@@ -18,7 +22,10 @@ export class TransactionService {
     return this.transactionRepository.findAll();
   }
 
-  async updateTransaction(id: string, data: Partial<Transaction>): Promise<Transaction | null> {
+  async updateTransaction(
+    id: string,
+    data: Partial<Transaction>,
+  ): Promise<Transaction | null> {
     return this.transactionRepository.update(id, data);
   }
 
@@ -34,11 +41,16 @@ export class TransactionService {
     return this.transactionRepository.findByStatus(status);
   }
 
-  async findByProviderRefId(providerRefId: string): Promise<Transaction | null> {
+  async findByProviderRefId(
+    providerRefId: string,
+  ): Promise<Transaction | null> {
     return this.transactionRepository.findByProviderRefId(providerRefId);
   }
 
-  async updateTransactionStatus(id: string, status: string): Promise<Transaction | null> {
+  async updateTransactionStatus(
+    id: string,
+    status: string,
+  ): Promise<Transaction | null> {
     return this.transactionRepository.updateStatus(id, status);
   }
 }

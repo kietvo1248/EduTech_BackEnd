@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { NotificationDocument, NotificationDocumentType } from '../schemas/notification.schema';
+import {
+  NotificationDocument,
+  NotificationDocumentType,
+} from '../schemas/notification.schema';
 import { NotificationRepositoryAbstract } from './notification.repository.abstract';
 import { NotificationMapper } from '../mappers/notification.mapper';
 import { Notification } from '../../../../domain/notification';
@@ -24,7 +27,9 @@ export class NotificationRepository implements NotificationRepositoryAbstract {
     return this.mapper.toDomainArray(docs);
   }
 
-  async create(data: Omit<Notification, 'id' | 'createdAt'>): Promise<Notification> {
+  async create(
+    data: Omit<Notification, 'id' | 'createdAt'>,
+  ): Promise<Notification> {
     const doc = await this.notificationModel.create({
       userId: new Types.ObjectId(data.userId),
       title: data.title,

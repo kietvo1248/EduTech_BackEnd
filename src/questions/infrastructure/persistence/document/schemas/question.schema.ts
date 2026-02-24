@@ -9,7 +9,10 @@ export class QuestionDocument {
   @Prop({ required: true })
   contentHtml!: string;
 
-  @Prop({ required: true, enum: ['MULTIPLE_CHOICE', 'FILL_IN_BLANK', 'TRUE_FALSE'] })
+  @Prop({
+    required: true,
+    enum: ['MULTIPLE_CHOICE', 'FILL_IN_BLANK', 'TRUE_FALSE'],
+  })
   type!: string;
 
   @Prop({ required: true, enum: ['EASY', 'MEDIUM', 'HARD'] })

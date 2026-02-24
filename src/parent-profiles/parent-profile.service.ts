@@ -4,9 +4,13 @@ import { ParentProfile } from './domain/parent-profile';
 
 @Injectable()
 export class ParentProfileService {
-  constructor(private readonly parentProfileRepository: ParentProfileRepositoryAbstract) {}
+  constructor(
+    private readonly parentProfileRepository: ParentProfileRepositoryAbstract,
+  ) {}
 
-  async createProfile(data: Omit<ParentProfile, 'id' | 'createdAt' | 'updatedAt'>): Promise<ParentProfile> {
+  async createProfile(
+    data: Omit<ParentProfile, 'id' | 'createdAt' | 'updatedAt'>,
+  ): Promise<ParentProfile> {
     return this.parentProfileRepository.create(data);
   }
 
@@ -18,7 +22,9 @@ export class ParentProfileService {
     return this.parentProfileRepository.findByUserId(userId);
   }
 
-  async getProfileByPhoneNumber(phoneNumber: string): Promise<ParentProfile | null> {
+  async getProfileByPhoneNumber(
+    phoneNumber: string,
+  ): Promise<ParentProfile | null> {
     return this.parentProfileRepository.findByPhoneNumber(phoneNumber);
   }
 
@@ -26,7 +32,10 @@ export class ParentProfileService {
     return this.parentProfileRepository.findAll();
   }
 
-  async updateProfile(id: string, data: Partial<ParentProfile>): Promise<ParentProfile | null> {
+  async updateProfile(
+    id: string,
+    data: Partial<ParentProfile>,
+  ): Promise<ParentProfile | null> {
     return this.parentProfileRepository.update(id, data);
   }
 
@@ -34,11 +43,15 @@ export class ParentProfileService {
     return this.parentProfileRepository.delete(id);
   }
 
-  async filterProfiles(filters: Partial<ParentProfile>): Promise<ParentProfile[]> {
+  async filterProfiles(
+    filters: Partial<ParentProfile>,
+  ): Promise<ParentProfile[]> {
     const allProfiles = await this.getAllProfiles();
     return allProfiles.filter((profile) => {
-      if (filters.fullName && !profile.fullName.includes(filters.fullName)) return false;
-      if (filters.phoneNumber && profile.phoneNumber !== filters.phoneNumber) return false;
+      if (filters.fullName && !profile.fullName.includes(filters.fullName))
+        return false;
+      if (filters.phoneNumber && profile.phoneNumber !== filters.phoneNumber)
+        return false;
       if (filters.userId && profile.userId !== filters.userId) return false;
       return true;
     });

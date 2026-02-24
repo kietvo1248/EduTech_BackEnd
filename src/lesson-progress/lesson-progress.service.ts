@@ -4,9 +4,13 @@ import { LessonProgress } from './domain/lesson-progress';
 
 @Injectable()
 export class LessonProgressService {
-  constructor(private readonly lessonProgressRepository: LessonProgressRepositoryAbstract) {}
+  constructor(
+    private readonly lessonProgressRepository: LessonProgressRepositoryAbstract,
+  ) {}
 
-  async createProgress(data: Omit<LessonProgress, 'id' | 'createdAt' | 'updatedAt'>): Promise<LessonProgress> {
+  async createProgress(
+    data: Omit<LessonProgress, 'id' | 'createdAt' | 'updatedAt'>,
+  ): Promise<LessonProgress> {
     return this.lessonProgressRepository.create(data);
   }
 
@@ -18,7 +22,10 @@ export class LessonProgressService {
     return this.lessonProgressRepository.findAll();
   }
 
-  async updateProgress(id: string, data: Partial<LessonProgress>): Promise<LessonProgress | null> {
+  async updateProgress(
+    id: string,
+    data: Partial<LessonProgress>,
+  ): Promise<LessonProgress | null> {
     return this.lessonProgressRepository.update(id, data);
   }
 
@@ -34,18 +41,37 @@ export class LessonProgressService {
     return this.lessonProgressRepository.findByLessonId(lessonId);
   }
 
-  async getProgressByUserAndLesson(userId: string, lessonId: string): Promise<LessonProgress | null> {
+  async getProgressByUserAndLesson(
+    userId: string,
+    lessonId: string,
+  ): Promise<LessonProgress | null> {
     return this.lessonProgressRepository.findByUserAndLesson(userId, lessonId);
   }
 
-  async updateWatchedTime(userId: string, lessonId: string, seconds: number): Promise<LessonProgress | null> {
-    return this.lessonProgressRepository.updateWatchedTime(userId, lessonId, seconds);
+  async updateWatchedTime(
+    userId: string,
+    lessonId: string,
+    seconds: number,
+  ): Promise<LessonProgress | null> {
+    return this.lessonProgressRepository.updateWatchedTime(
+      userId,
+      lessonId,
+      seconds,
+    );
   }
 
-  async completeLesson(userId: string, lessonId: string): Promise<LessonProgress | null> {
-    const progress = await this.lessonProgressRepository.findByUserAndLesson(userId, lessonId);
+  async completeLesson(
+    userId: string,
+    lessonId: string,
+  ): Promise<LessonProgress | null> {
+    const progress = await this.lessonProgressRepository.findByUserAndLesson(
+      userId,
+      lessonId,
+    );
     if (progress) {
-      return this.lessonProgressRepository.update(progress.id, { isCompleted: true });
+      return this.lessonProgressRepository.update(progress.id, {
+        isCompleted: true,
+      });
     }
     return this.lessonProgressRepository.create({
       userId,

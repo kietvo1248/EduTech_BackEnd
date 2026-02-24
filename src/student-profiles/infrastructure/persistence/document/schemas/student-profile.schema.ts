@@ -31,9 +31,12 @@ export class StudentProfileDocument {
   currentStreak!: number;
 }
 
-export type StudentProfileDocumentType = HydratedDocument<StudentProfileDocument> & {
-  createdAt: Date;
-  updatedAt: Date;
-};
+export type StudentProfileDocumentType =
+  HydratedDocument<StudentProfileDocument> & {
+    createdAt: Date;
+    updatedAt: Date;
+  };
 
-export const StudentProfileSchema = SchemaFactory.createForClass(StudentProfileDocument);
+export const StudentProfileSchema = SchemaFactory.createForClass(
+  StudentProfileDocument,
+);

@@ -4,9 +4,13 @@ import { GradeLevel } from './domain/grade-level';
 
 @Injectable()
 export class GradeLevelService {
-  constructor(private readonly gradeLevelRepository: GradeLevelRepositoryAbstract) {}
+  constructor(
+    private readonly gradeLevelRepository: GradeLevelRepositoryAbstract,
+  ) {}
 
-  async createGradeLevel(data: Omit<GradeLevel, 'id' | 'createdAt' | 'updatedAt'>): Promise<GradeLevel> {
+  async createGradeLevel(
+    data: Omit<GradeLevel, 'id' | 'createdAt' | 'updatedAt'>,
+  ): Promise<GradeLevel> {
     return this.gradeLevelRepository.create(data);
   }
 
@@ -18,7 +22,10 @@ export class GradeLevelService {
     return this.gradeLevelRepository.findAll();
   }
 
-  async updateGradeLevel(id: string, data: Partial<GradeLevel>): Promise<GradeLevel | null> {
+  async updateGradeLevel(
+    id: string,
+    data: Partial<GradeLevel>,
+  ): Promise<GradeLevel | null> {
     return this.gradeLevelRepository.update(id, data);
   }
 

@@ -1,6 +1,9 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { UserSubscriptionDocument, UserSubscriptionSchema } from './infrastructure/persistence/document/schemas/user-subscription.schema';
+import {
+  UserSubscriptionDocument,
+  UserSubscriptionSchema,
+} from './infrastructure/persistence/document/schemas/user-subscription.schema';
 import { UserSubscriptionRepository } from './infrastructure/persistence/document/repositories/user-subscription.repository';
 import { UserSubscriptionRepositoryAbstract } from './infrastructure/persistence/document/repositories/user-subscription.repository.abstract';
 import { UserSubscriptionMapper } from './infrastructure/persistence/document/mappers/user-subscription.mapper';

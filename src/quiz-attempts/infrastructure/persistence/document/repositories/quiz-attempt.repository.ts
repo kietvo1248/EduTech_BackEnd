@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { QuizAttemptDocument, QuizAttemptDocumentType } from '../schemas/quiz-attempt.schema';
+import {
+  QuizAttemptDocument,
+  QuizAttemptDocumentType,
+} from '../schemas/quiz-attempt.schema';
 import { QuizAttemptRepositoryAbstract } from './quiz-attempt.repository.abstract';
 import { QuizAttemptMapper } from '../mappers/quiz-attempt.mapper';
 import { QuizAttempt } from '../../../../domain/quiz-attempt';
@@ -24,7 +27,9 @@ export class QuizAttemptRepository implements QuizAttemptRepositoryAbstract {
     return this.mapper.toDomainArray(docs);
   }
 
-  async create(data: Omit<QuizAttempt, 'id' | 'createdAt'>): Promise<QuizAttempt> {
+  async create(
+    data: Omit<QuizAttempt, 'id' | 'createdAt'>,
+  ): Promise<QuizAttempt> {
     const doc = await this.quizAttemptModel.create({
       userId: new Types.ObjectId(data.userId),
       questionId: new Types.ObjectId(data.questionId),
@@ -53,7 +58,10 @@ export class QuizAttemptRepository implements QuizAttemptRepositoryAbstract {
     return this.mapper.toDomainArray(docs);
   }
 
-  async findByUserAndQuestion(userId: string, questionId: string): Promise<QuizAttempt[]> {
+  async findByUserAndQuestion(
+    userId: string,
+    questionId: string,
+  ): Promise<QuizAttempt[]> {
     const docs = await this.quizAttemptModel.find({
       userId: new Types.ObjectId(userId),
       questionId: new Types.ObjectId(questionId),
@@ -61,7 +69,13 @@ export class QuizAttemptRepository implements QuizAttemptRepositoryAbstract {
     return this.mapper.toDomainArray(docs);
   }
 
-  async getAttemptStats(userId: string): Promise<any> {
+  async getAttemptStats(userId: string): Promise<{
+    totalAttempts: number;
+    correctAttempts: number;
+    accuracy: string | number;
+    averageTimeSpentMs: number;
+    totalTimeSpentMs: number;
+  }> {
     const stats = await this.quizAttemptModel.aggregate([
       {
         $match: {
@@ -82,13 +96,26 @@ export class QuizAttemptRepository implements QuizAttemptRepositoryAbstract {
         },
       },
     ]);
-    return stats.length > 0
+
+    interface StatsResult {
+      totalAttempts: number;
+      correctAttempts: number;
+      averageTimeSpentMs: number;
+      totalTimeSpentMs: number;
+    }
+
+    const result = stats[0] as StatsResult | undefined;
+
+    return result
       ? {
-          totalAttempts: stats[0].totalAttempts,
-          correctAttempts: stats[0].correctAttempts,
-          accuracy: ((stats[0].correctAttempts / stats[0].totalAttempts) * 100).toFixed(2),
-          averageTimeSpentMs: Math.round(stats[0].averageTimeSpentMs),
-          totalTimeSpentMs: stats[0].totalTimeSpentMs,
+          totalAttempts: result.totalAttempts,
+          correctAttempts: result.correctAttempts,
+          accuracy: (
+            (result.correctAttempts / result.totalAttempts) *
+            100
+          ).toFixed(2),
+          averageTimeSpentMs: Math.round(result.averageTimeSpentMs),
+          totalTimeSpentMs: result.totalTimeSpentMs,
         }
       : {
           totalAttempts: 0,

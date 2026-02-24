@@ -4,9 +4,13 @@ import { UserSubscription } from './domain/user-subscription';
 
 @Injectable()
 export class UserSubscriptionService {
-  constructor(private readonly userSubscriptionRepository: UserSubscriptionRepositoryAbstract) {}
+  constructor(
+    private readonly userSubscriptionRepository: UserSubscriptionRepositoryAbstract,
+  ) {}
 
-  async createSubscription(data: Omit<UserSubscription, 'id' | 'createdAt' | 'updatedAt'>): Promise<UserSubscription> {
+  async createSubscription(
+    data: Omit<UserSubscription, 'id' | 'createdAt' | 'updatedAt'>,
+  ): Promise<UserSubscription> {
     return this.userSubscriptionRepository.create(data);
   }
 
@@ -18,7 +22,10 @@ export class UserSubscriptionService {
     return this.userSubscriptionRepository.findAll();
   }
 
-  async updateSubscription(id: string, data: Partial<UserSubscription>): Promise<UserSubscription | null> {
+  async updateSubscription(
+    id: string,
+    data: Partial<UserSubscription>,
+  ): Promise<UserSubscription | null> {
     return this.userSubscriptionRepository.update(id, data);
   }
 
@@ -30,11 +37,16 @@ export class UserSubscriptionService {
     return this.userSubscriptionRepository.findByUserId(userId);
   }
 
-  async findActiveSubscription(userId: string): Promise<UserSubscription | null> {
+  async findActiveSubscription(
+    userId: string,
+  ): Promise<UserSubscription | null> {
     return this.userSubscriptionRepository.findActiveSubscription(userId);
   }
 
-  async findByUserAndStatus(userId: string, status: string): Promise<UserSubscription[]> {
+  async findByUserAndStatus(
+    userId: string,
+    status: string,
+  ): Promise<UserSubscription[]> {
     return this.userSubscriptionRepository.findByUserAndStatus(userId, status);
   }
 

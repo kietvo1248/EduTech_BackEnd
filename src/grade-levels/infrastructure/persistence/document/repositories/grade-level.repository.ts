@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { GradeLevelDocument, GradeLevelDocumentType } from '../schemas/grade-level.schema';
+import {
+  GradeLevelDocument,
+  GradeLevelDocumentType,
+} from '../schemas/grade-level.schema';
 import { GradeLevelRepositoryAbstract } from './grade-level.repository.abstract';
 import { GradeLevelMapper } from '../mappers/grade-level.mapper';
 import { GradeLevel } from '../../../../domain/grade-level';
@@ -24,7 +27,9 @@ export class GradeLevelRepository implements GradeLevelRepositoryAbstract {
     return this.mapper.toDomainArray(docs);
   }
 
-  async create(data: Omit<GradeLevel, 'id' | 'createdAt' | 'updatedAt'>): Promise<GradeLevel> {
+  async create(
+    data: Omit<GradeLevel, 'id' | 'createdAt' | 'updatedAt'>,
+  ): Promise<GradeLevel> {
     const doc = await this.gradeLevelModel.create({
       name: data.name,
       value: data.value,
@@ -32,14 +37,21 @@ export class GradeLevelRepository implements GradeLevelRepositoryAbstract {
     return this.mapper.toDomain(doc);
   }
 
-  async update(id: string, data: Partial<GradeLevel>): Promise<GradeLevel | null> {
-    const updateData: any = {};
+  async update(
+    id: string,
+    data: Partial<GradeLevel>,
+  ): Promise<GradeLevel | null> {
+    const updateData: Record<string, unknown> = {};
     if (data.name) updateData.name = data.name;
     if (data.value !== undefined) updateData.value = data.value;
 
-    const doc = await this.gradeLevelModel.findByIdAndUpdate(id, updateData, {
-      new: true,
-    });
+    const doc = await this.gradeLevelModel.findByIdAndUpdate(
+      id,
+      updateData as any,
+      {
+        new: true,
+      },
+    );
     return doc ? this.mapper.toDomain(doc) : null;
   }
 

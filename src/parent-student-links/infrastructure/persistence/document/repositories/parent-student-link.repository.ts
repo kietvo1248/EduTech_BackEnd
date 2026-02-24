@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { ParentStudentLinkDocument, ParentStudentLinkDocumentType } from '../schemas/parent-student-link.schema';
+import {
+  ParentStudentLinkDocument,
+  ParentStudentLinkDocumentType,
+} from '../schemas/parent-student-link.schema';
 import { ParentStudentLinkRepositoryAbstract } from './parent-student-link.repository.abstract';
 import { ParentStudentLinkMapper } from '../mappers/parent-student-link.mapper';
 import { ParentStudentLink } from '../../../../domain/parent-student-link';
@@ -24,7 +27,9 @@ export class ParentStudentLinkRepository implements ParentStudentLinkRepositoryA
     return this.mapper.toDomainArray(docs);
   }
 
-  async create(data: Omit<ParentStudentLink, 'id' | 'createdAt'>): Promise<ParentStudentLink> {
+  async create(
+    data: Omit<ParentStudentLink, 'id' | 'createdAt'>,
+  ): Promise<ParentStudentLink> {
     const doc = await this.parentStudentLinkModel.create({
       parentId: new Types.ObjectId(data.parentId),
       studentId: new Types.ObjectId(data.studentId),
@@ -33,15 +38,23 @@ export class ParentStudentLinkRepository implements ParentStudentLinkRepositoryA
     return this.mapper.toDomain(doc);
   }
 
-  async update(id: string, data: Partial<ParentStudentLink>): Promise<ParentStudentLink | null> {
-    const updateData: any = {};
+  async update(
+    id: string,
+    data: Partial<ParentStudentLink>,
+  ): Promise<ParentStudentLink | null> {
+    const updateData: Record<string, unknown> = {};
     if (data.parentId) updateData.parentId = new Types.ObjectId(data.parentId);
-    if (data.studentId) updateData.studentId = new Types.ObjectId(data.studentId);
+    if (data.studentId)
+      updateData.studentId = new Types.ObjectId(data.studentId);
     if (data.isVerified !== undefined) updateData.isVerified = data.isVerified;
 
-    const doc = await this.parentStudentLinkModel.findByIdAndUpdate(id, updateData, {
-      new: true,
-    });
+    const doc = await this.parentStudentLinkModel.findByIdAndUpdate(
+      id,
+      updateData as any,
+      {
+        new: true,
+      },
+    );
     return doc ? this.mapper.toDomain(doc) : null;
   }
 
@@ -63,7 +76,10 @@ export class ParentStudentLinkRepository implements ParentStudentLinkRepositoryA
     return this.mapper.toDomainArray(docs);
   }
 
-  async findByParentAndStudent(parentId: string, studentId: string): Promise<ParentStudentLink | null> {
+  async findByParentAndStudent(
+    parentId: string,
+    studentId: string,
+  ): Promise<ParentStudentLink | null> {
     const doc = await this.parentStudentLinkModel.findOne({
       parentId: new Types.ObjectId(parentId),
       studentId: new Types.ObjectId(studentId),
@@ -79,7 +95,9 @@ export class ParentStudentLinkRepository implements ParentStudentLinkRepositoryA
     return this.mapper.toDomainArray(docs);
   }
 
-  async findVerifiedByStudentId(studentId: string): Promise<ParentStudentLink[]> {
+  async findVerifiedByStudentId(
+    studentId: string,
+  ): Promise<ParentStudentLink[]> {
     const docs = await this.parentStudentLinkModel.find({
       studentId: new Types.ObjectId(studentId),
       isVerified: true,

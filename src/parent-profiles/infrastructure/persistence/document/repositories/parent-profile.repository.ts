@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { ParentProfileDocument, ParentProfileDocumentType } from '../schemas/parent-profile.schema';
+import {
+  ParentProfileDocument,
+  ParentProfileDocumentType,
+} from '../schemas/parent-profile.schema';
 import { ParentProfileRepositoryAbstract } from './parent-profile.repository.abstract';
 import { ParentProfileMapper } from '../mappers/parent-profile.mapper';
 import { ParentProfile } from '../../../../domain/parent-profile';
@@ -24,7 +27,9 @@ export class ParentProfileRepository implements ParentProfileRepositoryAbstract 
     return this.mapper.toDomainArray(docs);
   }
 
-  async create(data: Omit<ParentProfile, 'id' | 'createdAt' | 'updatedAt'>): Promise<ParentProfile> {
+  async create(
+    data: Omit<ParentProfile, 'id' | 'createdAt' | 'updatedAt'>,
+  ): Promise<ParentProfile> {
     const doc = await this.parentProfileModel.create({
       userId: new Types.ObjectId(data.userId),
       fullName: data.fullName,
@@ -33,15 +38,22 @@ export class ParentProfileRepository implements ParentProfileRepositoryAbstract 
     return this.mapper.toDomain(doc);
   }
 
-  async update(id: string, data: Partial<ParentProfile>): Promise<ParentProfile | null> {
-    const updateData: any = {};
+  async update(
+    id: string,
+    data: Partial<ParentProfile>,
+  ): Promise<ParentProfile | null> {
+    const updateData: Record<string, unknown> = {};
     if (data.userId) updateData.userId = new Types.ObjectId(data.userId);
     if (data.fullName) updateData.fullName = data.fullName;
     if (data.phoneNumber) updateData.phoneNumber = data.phoneNumber;
 
-    const doc = await this.parentProfileModel.findByIdAndUpdate(id, updateData, {
-      new: true,
-    });
+    const doc = await this.parentProfileModel.findByIdAndUpdate(
+      id,
+      updateData as any,
+      {
+        new: true,
+      },
+    );
     return doc ? this.mapper.toDomain(doc) : null;
   }
 

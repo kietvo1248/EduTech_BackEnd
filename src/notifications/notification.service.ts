@@ -4,9 +4,13 @@ import { Notification } from './domain/notification';
 
 @Injectable()
 export class NotificationService {
-  constructor(private readonly notificationRepository: NotificationRepositoryAbstract) {}
+  constructor(
+    private readonly notificationRepository: NotificationRepositoryAbstract,
+  ) {}
 
-  async createNotification(data: Omit<Notification, 'id' | 'createdAt'>): Promise<Notification> {
+  async createNotification(
+    data: Omit<Notification, 'id' | 'createdAt'>,
+  ): Promise<Notification> {
     return this.notificationRepository.create(data);
   }
 

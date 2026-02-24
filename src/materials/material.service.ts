@@ -4,9 +4,13 @@ import { Material } from './domain/material';
 
 @Injectable()
 export class MaterialService {
-  constructor(private readonly materialRepository: MaterialRepositoryAbstract) {}
+  constructor(
+    private readonly materialRepository: MaterialRepositoryAbstract,
+  ) {}
 
-  async createMaterial(data: Omit<Material, 'id' | 'createdAt' | 'updatedAt'>): Promise<Material> {
+  async createMaterial(
+    data: Omit<Material, 'id' | 'createdAt' | 'updatedAt'>,
+  ): Promise<Material> {
     return this.materialRepository.create(data);
   }
 
@@ -18,7 +22,10 @@ export class MaterialService {
     return this.materialRepository.findAll();
   }
 
-  async updateMaterial(id: string, data: Partial<Material>): Promise<Material | null> {
+  async updateMaterial(
+    id: string,
+    data: Partial<Material>,
+  ): Promise<Material | null> {
     return this.materialRepository.update(id, data);
   }
 

@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { UserSubscriptionDocument, UserSubscriptionDocumentType } from '../schemas/user-subscription.schema';
+import {
+  UserSubscriptionDocument,
+  UserSubscriptionDocumentType,
+} from '../schemas/user-subscription.schema';
 import { UserSubscriptionRepositoryAbstract } from './user-subscription.repository.abstract';
 import { UserSubscriptionMapper } from '../mappers/user-subscription.mapper';
 import { UserSubscription } from '../../../../domain/user-subscription';
@@ -24,7 +27,9 @@ export class UserSubscriptionRepository implements UserSubscriptionRepositoryAbs
     return this.mapper.toDomainArray(docs);
   }
 
-  async create(data: Omit<UserSubscription, 'id' | 'createdAt' | 'updatedAt'>): Promise<UserSubscription> {
+  async create(
+    data: Omit<UserSubscription, 'id' | 'createdAt' | 'updatedAt'>,
+  ): Promise<UserSubscription> {
     const doc = await this.userSubscriptionModel.create({
       userId: new Types.ObjectId(data.userId),
       planId: new Types.ObjectId(data.planId),
@@ -35,17 +40,24 @@ export class UserSubscriptionRepository implements UserSubscriptionRepositoryAbs
     return this.mapper.toDomain(doc);
   }
 
-  async update(id: string, data: Partial<UserSubscription>): Promise<UserSubscription | null> {
-    const updateData: any = {};
+  async update(
+    id: string,
+    data: Partial<UserSubscription>,
+  ): Promise<UserSubscription | null> {
+    const updateData: Record<string, unknown> = {};
     if (data.userId) updateData.userId = new Types.ObjectId(data.userId);
     if (data.planId) updateData.planId = new Types.ObjectId(data.planId);
     if (data.startDate) updateData.startDate = data.startDate;
     if (data.endDate) updateData.endDate = data.endDate;
     if (data.status) updateData.status = data.status;
 
-    const doc = await this.userSubscriptionModel.findByIdAndUpdate(id, updateData, {
-      new: true,
-    });
+    const doc = await this.userSubscriptionModel.findByIdAndUpdate(
+      id,
+      updateData as any,
+      {
+        new: true,
+      },
+    );
     return doc ? this.mapper.toDomain(doc) : null;
   }
 
@@ -60,7 +72,9 @@ export class UserSubscriptionRepository implements UserSubscriptionRepositoryAbs
     return this.mapper.toDomainArray(docs);
   }
 
-  async findActiveSubscription(userId: string): Promise<UserSubscription | null> {
+  async findActiveSubscription(
+    userId: string,
+  ): Promise<UserSubscription | null> {
     const doc = await this.userSubscriptionModel.findOne({
       userId: new Types.ObjectId(userId),
       status: 'ACTIVE',
@@ -69,7 +83,10 @@ export class UserSubscriptionRepository implements UserSubscriptionRepositoryAbs
     return doc ? this.mapper.toDomain(doc) : null;
   }
 
-  async findByUserAndStatus(userId: string, status: string): Promise<UserSubscription[]> {
+  async findByUserAndStatus(
+    userId: string,
+    status: string,
+  ): Promise<UserSubscription[]> {
     const docs = await this.userSubscriptionModel.find({
       userId: new Types.ObjectId(userId),
       status,

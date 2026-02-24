@@ -24,7 +24,9 @@ export class CourseRepository implements CourseRepositoryAbstract {
     return this.mapper.toDomainArray(docs);
   }
 
-  async create(data: Omit<Course, 'id' | 'createdAt' | 'updatedAt'>): Promise<Course> {
+  async create(
+    data: Omit<Course, 'id' | 'createdAt' | 'updatedAt'>,
+  ): Promise<Course> {
     const doc = await this.courseModel.create({
       subjectId: new Types.ObjectId(data.subjectId),
       gradeLevelId: new Types.ObjectId(data.gradeLevelId),
@@ -39,19 +41,26 @@ export class CourseRepository implements CourseRepositoryAbstract {
   }
 
   async update(id: string, data: Partial<Course>): Promise<Course | null> {
-    const updateData: any = {};
-    if (data.subjectId) updateData.subjectId = new Types.ObjectId(data.subjectId);
-    if (data.gradeLevelId) updateData.gradeLevelId = new Types.ObjectId(data.gradeLevelId);
+    const updateData: Record<string, unknown> = {};
+    if (data.subjectId)
+      updateData.subjectId = new Types.ObjectId(data.subjectId);
+    if (data.gradeLevelId)
+      updateData.gradeLevelId = new Types.ObjectId(data.gradeLevelId);
     if (data.authorId) updateData.authorId = new Types.ObjectId(data.authorId);
     if (data.title) updateData.title = data.title;
     if (data.description) updateData.description = data.description;
     if (data.thumbnailUrl) updateData.thumbnailUrl = data.thumbnailUrl;
-    if (data.isPublished !== undefined) updateData.isPublished = data.isPublished;
+    if (data.isPublished !== undefined)
+      updateData.isPublished = data.isPublished;
     if (data.isPro !== undefined) updateData.isPro = data.isPro;
 
-    const doc = await this.courseModel.findByIdAndUpdate(id, updateData, {
-      new: true,
-    });
+    const doc = await this.courseModel.findByIdAndUpdate(
+      id,
+      updateData as any,
+      {
+        new: true,
+      },
+    );
     return doc ? this.mapper.toDomain(doc) : null;
   }
 

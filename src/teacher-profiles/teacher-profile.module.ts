@@ -1,6 +1,9 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { TeacherProfileDocument, TeacherProfileSchema } from './infrastructure/persistence/document/schemas/teacher-profile.schema';
+import {
+  TeacherProfileDocument,
+  TeacherProfileSchema,
+} from './infrastructure/persistence/document/schemas/teacher-profile.schema';
 import { TeacherProfileRepository } from './infrastructure/persistence/document/repositories/teacher-profile.repository';
 import { TeacherProfileRepositoryAbstract } from './infrastructure/persistence/document/repositories/teacher-profile.repository.abstract';
 import { TeacherProfileMapper } from './infrastructure/persistence/document/mappers/teacher-profile.mapper';

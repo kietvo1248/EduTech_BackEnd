@@ -1,4 +1,3 @@
-
 const nodeEnv = process.env.NODE_ENV ?? 'development';
 
 const getEnv = (key: string, fallback?: string) =>

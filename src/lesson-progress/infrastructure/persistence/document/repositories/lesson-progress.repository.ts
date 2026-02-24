@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { LessonProgressDocument, LessonProgressDocumentType } from '../schemas/lesson-progress.schema';
+import {
+  LessonProgressDocument,
+  LessonProgressDocumentType,
+} from '../schemas/lesson-progress.schema';
 import { LessonProgressRepositoryAbstract } from './lesson-progress.repository.abstract';
 import { LessonProgressMapper } from '../mappers/lesson-progress.mapper';
 import { LessonProgress } from '../../../../domain/lesson-progress';
@@ -24,7 +27,9 @@ export class LessonProgressRepository implements LessonProgressRepositoryAbstrac
     return this.mapper.toDomainArray(docs);
   }
 
-  async create(data: Omit<LessonProgress, 'id' | 'createdAt' | 'updatedAt'>): Promise<LessonProgress> {
+  async create(
+    data: Omit<LessonProgress, 'id' | 'createdAt' | 'updatedAt'>,
+  ): Promise<LessonProgress> {
     const doc = await this.lessonProgressModel.create({
       userId: new Types.ObjectId(data.userId),
       lessonId: new Types.ObjectId(data.lessonId),
@@ -34,16 +39,25 @@ export class LessonProgressRepository implements LessonProgressRepositoryAbstrac
     return this.mapper.toDomain(doc);
   }
 
-  async update(id: string, data: Partial<LessonProgress>): Promise<LessonProgress | null> {
-    const updateData: any = {};
+  async update(
+    id: string,
+    data: Partial<LessonProgress>,
+  ): Promise<LessonProgress | null> {
+    const updateData: Record<string, unknown> = {};
     if (data.userId) updateData.userId = new Types.ObjectId(data.userId);
     if (data.lessonId) updateData.lessonId = new Types.ObjectId(data.lessonId);
-    if (data.isCompleted !== undefined) updateData.isCompleted = data.isCompleted;
-    if (data.lastWatchedSec !== undefined) updateData.lastWatchedSec = data.lastWatchedSec;
+    if (data.isCompleted !== undefined)
+      updateData.isCompleted = data.isCompleted;
+    if (data.lastWatchedSec !== undefined)
+      updateData.lastWatchedSec = data.lastWatchedSec;
 
-    const doc = await this.lessonProgressModel.findByIdAndUpdate(id, updateData, {
-      new: true,
-    });
+    const doc = await this.lessonProgressModel.findByIdAndUpdate(
+      id,
+      updateData as any,
+      {
+        new: true,
+      },
+    );
     return doc ? this.mapper.toDomain(doc) : null;
   }
 
@@ -65,7 +79,10 @@ export class LessonProgressRepository implements LessonProgressRepositoryAbstrac
     return this.mapper.toDomainArray(docs);
   }
 
-  async findByUserAndLesson(userId: string, lessonId: string): Promise<LessonProgress | null> {
+  async findByUserAndLesson(
+    userId: string,
+    lessonId: string,
+  ): Promise<LessonProgress | null> {
     const doc = await this.lessonProgressModel.findOne({
       userId: new Types.ObjectId(userId),
       lessonId: new Types.ObjectId(lessonId),
@@ -73,7 +90,11 @@ export class LessonProgressRepository implements LessonProgressRepositoryAbstrac
     return doc ? this.mapper.toDomain(doc) : null;
   }
 
-  async updateWatchedTime(userId: string, lessonId: string, seconds: number): Promise<LessonProgress | null> {
+  async updateWatchedTime(
+    userId: string,
+    lessonId: string,
+    seconds: number,
+  ): Promise<LessonProgress | null> {
     const doc = await this.lessonProgressModel.findOneAndUpdate(
       {
         userId: new Types.ObjectId(userId),

@@ -1,6 +1,9 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { TransactionDocument, TransactionSchema } from './infrastructure/persistence/document/schemas/transaction.schema';
+import {
+  TransactionDocument,
+  TransactionSchema,
+} from './infrastructure/persistence/document/schemas/transaction.schema';
 import { TransactionRepository } from './infrastructure/persistence/document/repositories/transaction.repository';
 import { TransactionRepositoryAbstract } from './infrastructure/persistence/document/repositories/transaction.repository.abstract';
 import { TransactionMapper } from './infrastructure/persistence/document/mappers/transaction.mapper';

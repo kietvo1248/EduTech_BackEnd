@@ -3,7 +3,9 @@ import { Notification } from '../../../../domain/notification';
 export abstract class NotificationRepositoryAbstract {
   abstract findById(id: string): Promise<Notification | null>;
   abstract findAll(): Promise<Notification[]>;
-  abstract create(data: Omit<Notification, 'id' | 'createdAt'>): Promise<Notification>;
+  abstract create(
+    data: Omit<Notification, 'id' | 'createdAt'>,
+  ): Promise<Notification>;
   abstract delete(id: string): Promise<void>;
   abstract findByUserId(userId: string): Promise<Notification[]>;
   abstract markAsRead(id: string): Promise<Notification | null>;

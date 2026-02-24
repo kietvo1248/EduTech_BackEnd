@@ -6,7 +6,9 @@ import { Chapter } from './domain/chapter';
 export class ChapterService {
   constructor(private readonly chapterRepository: ChapterRepositoryAbstract) {}
 
-  async createChapter(data: Omit<Chapter, 'id' | 'createdAt' | 'updatedAt'>): Promise<Chapter> {
+  async createChapter(
+    data: Omit<Chapter, 'id' | 'createdAt' | 'updatedAt'>,
+  ): Promise<Chapter> {
     return this.chapterRepository.create(data);
   }
 
@@ -18,7 +20,10 @@ export class ChapterService {
     return this.chapterRepository.findAll();
   }
 
-  async updateChapter(id: string, data: Partial<Chapter>): Promise<Chapter | null> {
+  async updateChapter(
+    id: string,
+    data: Partial<Chapter>,
+  ): Promise<Chapter | null> {
     return this.chapterRepository.update(id, data);
   }
 

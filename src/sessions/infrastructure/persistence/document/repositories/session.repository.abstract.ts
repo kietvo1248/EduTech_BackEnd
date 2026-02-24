@@ -8,5 +8,8 @@ export abstract class SessionRepositoryAbstract {
   abstract delete(id: string): Promise<void>;
   abstract findByUserId(userId: string): Promise<Session[]>;
   abstract deleteByUserId(userId: string): Promise<void>;
-  abstract findByUserIdAndToken(userId: string, hashedRt: string): Promise<Session | null>;
+  abstract findByUserIdAndToken(
+    userId: string,
+    hashedRt: string,
+  ): Promise<Session | null>;
 }

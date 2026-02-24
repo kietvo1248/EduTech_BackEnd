@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { SessionDocument, SessionDocumentType } from '../schemas/session.schema';
+import {
+  SessionDocument,
+  SessionDocumentType,
+} from '../schemas/session.schema';
 import { SessionRepositoryAbstract } from './session.repository.abstract';
 import { SessionMapper } from '../mappers/session.mapper';
 import { Session } from '../../../../domain/session';
@@ -36,16 +39,20 @@ export class SessionRepository implements SessionRepositoryAbstract {
   }
 
   async update(id: string, data: Partial<Session>): Promise<Session | null> {
-    const updateData: any = {};
+    const updateData: Record<string, unknown> = {};
     if (data.userId) updateData.userId = new Types.ObjectId(data.userId);
     if (data.hashedRt) updateData.hashedRt = data.hashedRt;
     if (data.deviceInfo) updateData.deviceInfo = data.deviceInfo;
     if (data.ipAddress) updateData.ipAddress = data.ipAddress;
     if (data.expiresAt) updateData.expiresAt = data.expiresAt;
 
-    const doc = await this.sessionModel.findByIdAndUpdate(id, updateData, {
-      new: true,
-    });
+    const doc = await this.sessionModel.findByIdAndUpdate(
+      id,
+      updateData as any,
+      {
+        new: true,
+      },
+    );
     return doc ? this.mapper.toDomain(doc) : null;
   }
 
@@ -66,7 +73,10 @@ export class SessionRepository implements SessionRepositoryAbstract {
     });
   }
 
-  async findByUserIdAndToken(userId: string, hashedRt: string): Promise<Session | null> {
+  async findByUserIdAndToken(
+    userId: string,
+    hashedRt: string,
+  ): Promise<Session | null> {
     const doc = await this.sessionModel.findOne({
       userId: new Types.ObjectId(userId),
       hashedRt,

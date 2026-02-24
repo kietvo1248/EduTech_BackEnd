@@ -4,9 +4,13 @@ import { SubscriptionPlan } from './domain/subscription-plan';
 
 @Injectable()
 export class SubscriptionPlanService {
-  constructor(private readonly subscriptionPlanRepository: SubscriptionPlanRepositoryAbstract) {}
+  constructor(
+    private readonly subscriptionPlanRepository: SubscriptionPlanRepositoryAbstract,
+  ) {}
 
-  async createPlan(data: Omit<SubscriptionPlan, 'id' | 'createdAt' | 'updatedAt'>): Promise<SubscriptionPlan> {
+  async createPlan(
+    data: Omit<SubscriptionPlan, 'id' | 'createdAt' | 'updatedAt'>,
+  ): Promise<SubscriptionPlan> {
     return this.subscriptionPlanRepository.create(data);
   }
 
@@ -18,7 +22,10 @@ export class SubscriptionPlanService {
     return this.subscriptionPlanRepository.findAll();
   }
 
-  async updatePlan(id: string, data: Partial<SubscriptionPlan>): Promise<SubscriptionPlan | null> {
+  async updatePlan(
+    id: string,
+    data: Partial<SubscriptionPlan>,
+  ): Promise<SubscriptionPlan | null> {
     return this.subscriptionPlanRepository.update(id, data);
   }
 

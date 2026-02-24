@@ -24,7 +24,13 @@ export class QuizAttemptController {
   }
 
   @Get('stats/:userId')
-  async getStats(@Param('userId') userId: string) {
+  async getStats(@Param('userId') userId: string): Promise<{
+    totalAttempts: number;
+    correctAttempts: number;
+    accuracy: string | number;
+    averageTimeSpentMs: number;
+    totalTimeSpentMs: number;
+  }> {
     return this.quizAttemptService.getAttemptStats(userId);
   }
 

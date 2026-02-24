@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { ChapterDocument, ChapterDocumentType } from '../schemas/chapter.schema';
+import {
+  ChapterDocument,
+  ChapterDocumentType,
+} from '../schemas/chapter.schema';
 import { ChapterRepositoryAbstract } from './chapter.repository.abstract';
 import { ChapterMapper } from '../mappers/chapter.mapper';
 import { Chapter } from '../../../../domain/chapter';
@@ -24,7 +27,9 @@ export class ChapterRepository implements ChapterRepositoryAbstract {
     return this.mapper.toDomainArray(docs);
   }
 
-  async create(data: Omit<Chapter, 'id' | 'createdAt' | 'updatedAt'>): Promise<Chapter> {
+  async create(
+    data: Omit<Chapter, 'id' | 'createdAt' | 'updatedAt'>,
+  ): Promise<Chapter> {
     const doc = await this.chapterModel.create({
       courseId: new Types.ObjectId(data.courseId),
       title: data.title,
@@ -34,14 +39,18 @@ export class ChapterRepository implements ChapterRepositoryAbstract {
   }
 
   async update(id: string, data: Partial<Chapter>): Promise<Chapter | null> {
-    const updateData: any = {};
+    const updateData: Record<string, unknown> = {};
     if (data.courseId) updateData.courseId = new Types.ObjectId(data.courseId);
     if (data.title) updateData.title = data.title;
     if (data.orderIndex !== undefined) updateData.orderIndex = data.orderIndex;
 
-    const doc = await this.chapterModel.findByIdAndUpdate(id, updateData, {
-      new: true,
-    });
+    const doc = await this.chapterModel.findByIdAndUpdate(
+      id,
+      updateData as any,
+      {
+        new: true,
+      },
+    );
     return doc ? this.mapper.toDomain(doc) : null;
   }
 
@@ -63,7 +72,11 @@ export class ChapterRepository implements ChapterRepositoryAbstract {
     chapters: Array<{ id: string; orderIndex: number }>,
   ): Promise<Chapter[]> {
     for (const chapter of chapters) {
-      await this.chapterModel.findByIdAndUpdate(chapter.id, { orderIndex: chapter.orderIndex }, { new: true });
+      await this.chapterModel.findByIdAndUpdate(
+        chapter.id,
+        { orderIndex: chapter.orderIndex },
+        { new: true },
+      );
     }
     return this.findByCourseId(courseId);
   }

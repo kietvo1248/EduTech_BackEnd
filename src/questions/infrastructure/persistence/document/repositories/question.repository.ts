@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { QuestionDocument, QuestionDocumentType } from '../schemas/question.schema';
+import {
+  QuestionDocument,
+  QuestionDocumentType,
+} from '../schemas/question.schema';
 import { QuestionRepositoryAbstract } from './question.repository.abstract';
 import { QuestionMapper } from '../mappers/question.mapper';
 import { Question } from '../../../../domain/question';
@@ -24,7 +27,9 @@ export class QuestionRepository implements QuestionRepositoryAbstract {
     return this.mapper.toDomainArray(docs);
   }
 
-  async create(data: Omit<Question, 'id' | 'createdAt' | 'updatedAt'>): Promise<Question> {
+  async create(
+    data: Omit<Question, 'id' | 'createdAt' | 'updatedAt'>,
+  ): Promise<Question> {
     const doc = await this.questionModel.create({
       lessonId: data.lessonId ? new Types.ObjectId(data.lessonId) : undefined,
       contentHtml: data.contentHtml,
@@ -38,7 +43,7 @@ export class QuestionRepository implements QuestionRepositoryAbstract {
   }
 
   async update(id: string, data: Partial<Question>): Promise<Question | null> {
-    const updateData: any = {};
+    const updateData: Record<string, unknown> = {};
     if (data.lessonId) updateData.lessonId = new Types.ObjectId(data.lessonId);
     if (data.contentHtml) updateData.contentHtml = data.contentHtml;
     if (data.type) updateData.type = data.type;
@@ -47,9 +52,13 @@ export class QuestionRepository implements QuestionRepositoryAbstract {
     if (data.correctAnswer) updateData.correctAnswer = data.correctAnswer;
     if (data.explanation) updateData.explanation = data.explanation;
 
-    const doc = await this.questionModel.findByIdAndUpdate(id, updateData, {
-      new: true,
-    });
+    const doc = await this.questionModel.findByIdAndUpdate(
+      id,
+      updateData as any,
+      {
+        new: true,
+      },
+    );
     return doc ? this.mapper.toDomain(doc) : null;
   }
 
@@ -73,15 +82,29 @@ export class QuestionRepository implements QuestionRepositoryAbstract {
     const docs = await this.questionModel.aggregate([
       { $sample: { size: limit } },
     ]);
-    return docs.map((doc) => ({
+
+    interface QuestionDoc {
+      _id: Types.ObjectId;
+      lessonId?: Types.ObjectId;
+      contentHtml: string;
+      type: string;
+      difficulty: string;
+      options: string[];
+      correctAnswer: string;
+      explanation?: string;
+      createdAt: Date;
+      updatedAt: Date;
+    }
+
+    return docs.map((doc: QuestionDoc) => ({
       id: doc._id.toString(),
-      lessonId: doc.lessonId ? doc.lessonId.toString() : undefined,
+      lessonId: doc.lessonId?.toString(),
       contentHtml: doc.contentHtml,
       type: doc.type,
       difficulty: doc.difficulty,
       options: doc.options,
       correctAnswer: doc.correctAnswer,
-      explanation: doc.explanation,
+      explanation: doc.explanation ?? '',
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
     }));

@@ -16,6 +16,9 @@ export class ParentStudentLinkDocument {
   createdAt!: Date;
 }
 
-export type ParentStudentLinkDocumentType = HydratedDocument<ParentStudentLinkDocument>;
+export type ParentStudentLinkDocumentType =
+  HydratedDocument<ParentStudentLinkDocument>;
 
-export const ParentStudentLinkSchema = SchemaFactory.createForClass(ParentStudentLinkDocument);
+export const ParentStudentLinkSchema = SchemaFactory.createForClass(
+  ParentStudentLinkDocument,
+);

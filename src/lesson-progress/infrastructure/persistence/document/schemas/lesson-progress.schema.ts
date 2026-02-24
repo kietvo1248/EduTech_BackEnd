@@ -16,9 +16,12 @@ export class LessonProgressDocument {
   lastWatchedSec!: number;
 }
 
-export type LessonProgressDocumentType = HydratedDocument<LessonProgressDocument> & {
-  createdAt: Date;
-  updatedAt: Date;
-};
+export type LessonProgressDocumentType =
+  HydratedDocument<LessonProgressDocument> & {
+    createdAt: Date;
+    updatedAt: Date;
+  };
 
-export const LessonProgressSchema = SchemaFactory.createForClass(LessonProgressDocument);
+export const LessonProgressSchema = SchemaFactory.createForClass(
+  LessonProgressDocument,
+);

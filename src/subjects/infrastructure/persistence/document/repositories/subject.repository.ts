@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { SubjectDocument, SubjectDocumentType } from '../schemas/subject.schema';
+import {
+  SubjectDocument,
+  SubjectDocumentType,
+} from '../schemas/subject.schema';
 import { SubjectRepositoryAbstract } from './subject.repository.abstract';
 import { SubjectMapper } from '../mappers/subject.mapper';
 import { Subject } from '../../../../domain/subject';
@@ -24,7 +27,9 @@ export class SubjectRepository implements SubjectRepositoryAbstract {
     return this.mapper.toDomainArray(docs);
   }
 
-  async create(data: Omit<Subject, 'id' | 'createdAt' | 'updatedAt'>): Promise<Subject> {
+  async create(
+    data: Omit<Subject, 'id' | 'createdAt' | 'updatedAt'>,
+  ): Promise<Subject> {
     const doc = await this.subjectModel.create({
       name: data.name,
       slug: data.slug,
@@ -34,14 +39,18 @@ export class SubjectRepository implements SubjectRepositoryAbstract {
   }
 
   async update(id: string, data: Partial<Subject>): Promise<Subject | null> {
-    const updateData: any = {};
+    const updateData: Record<string, unknown> = {};
     if (data.name) updateData.name = data.name;
     if (data.slug) updateData.slug = data.slug;
     if (data.iconUrl) updateData.iconUrl = data.iconUrl;
 
-    const doc = await this.subjectModel.findByIdAndUpdate(id, updateData, {
-      new: true,
-    });
+    const doc = await this.subjectModel.findByIdAndUpdate(
+      id,
+      updateData as any,
+      {
+        new: true,
+      },
+    );
     return doc ? this.mapper.toDomain(doc) : null;
   }
 

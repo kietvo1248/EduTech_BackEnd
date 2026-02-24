@@ -6,7 +6,9 @@ import { Course } from './domain/course';
 export class CourseService {
   constructor(private readonly courseRepository: CourseRepositoryAbstract) {}
 
-  async createCourse(data: Omit<Course, 'id' | 'createdAt' | 'updatedAt'>): Promise<Course> {
+  async createCourse(
+    data: Omit<Course, 'id' | 'createdAt' | 'updatedAt'>,
+  ): Promise<Course> {
     return this.courseRepository.create(data);
   }
 
@@ -18,7 +20,10 @@ export class CourseService {
     return this.courseRepository.findAll();
   }
 
-  async updateCourse(id: string, data: Partial<Course>): Promise<Course | null> {
+  async updateCourse(
+    id: string,
+    data: Partial<Course>,
+  ): Promise<Course | null> {
     return this.courseRepository.update(id, data);
   }
 

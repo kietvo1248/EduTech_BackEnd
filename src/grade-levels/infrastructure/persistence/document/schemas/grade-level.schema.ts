@@ -15,4 +15,5 @@ export type GradeLevelDocumentType = HydratedDocument<GradeLevelDocument> & {
   updatedAt: Date;
 };
 
-export const GradeLevelSchema = SchemaFactory.createForClass(GradeLevelDocument);
+export const GradeLevelSchema =
+  SchemaFactory.createForClass(GradeLevelDocument);

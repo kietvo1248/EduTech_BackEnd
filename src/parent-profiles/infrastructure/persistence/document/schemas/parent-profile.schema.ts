@@ -13,9 +13,12 @@ export class ParentProfileDocument {
   phoneNumber!: string;
 }
 
-export type ParentProfileDocumentType = HydratedDocument<ParentProfileDocument> & {
-  createdAt: Date;
-  updatedAt: Date;
-};
+export type ParentProfileDocumentType =
+  HydratedDocument<ParentProfileDocument> & {
+    createdAt: Date;
+    updatedAt: Date;
+  };
 
-export const ParentProfileSchema = SchemaFactory.createForClass(ParentProfileDocument);
+export const ParentProfileSchema = SchemaFactory.createForClass(
+  ParentProfileDocument,
+);

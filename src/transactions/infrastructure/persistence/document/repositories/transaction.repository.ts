@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { TransactionDocument, TransactionDocumentType } from '../schemas/transaction.schema';
+import {
+  TransactionDocument,
+  TransactionDocumentType,
+} from '../schemas/transaction.schema';
 import { TransactionRepositoryAbstract } from './transaction.repository.abstract';
 import { TransactionMapper } from '../mappers/transaction.mapper';
 import { Transaction } from '../../../../domain/transaction';
@@ -24,7 +27,9 @@ export class TransactionRepository implements TransactionRepositoryAbstract {
     return this.mapper.toDomainArray(docs);
   }
 
-  async create(data: Omit<Transaction, 'id' | 'createdAt' | 'updatedAt'>): Promise<Transaction> {
+  async create(
+    data: Omit<Transaction, 'id' | 'createdAt' | 'updatedAt'>,
+  ): Promise<Transaction> {
     const doc = await this.transactionModel.create({
       userId: new Types.ObjectId(data.userId),
       amount: data.amount,
@@ -36,8 +41,11 @@ export class TransactionRepository implements TransactionRepositoryAbstract {
     return this.mapper.toDomain(doc);
   }
 
-  async update(id: string, data: Partial<Transaction>): Promise<Transaction | null> {
-    const updateData: any = {};
+  async update(
+    id: string,
+    data: Partial<Transaction>,
+  ): Promise<Transaction | null> {
+    const updateData: Record<string, unknown> = {};
     if (data.userId) updateData.userId = new Types.ObjectId(data.userId);
     if (data.amount !== undefined) updateData.amount = data.amount;
     if (data.currency) updateData.currency = data.currency;
@@ -45,9 +53,13 @@ export class TransactionRepository implements TransactionRepositoryAbstract {
     if (data.providerRefId) updateData.providerRefId = data.providerRefId;
     if (data.status) updateData.status = data.status;
 
-    const doc = await this.transactionModel.findByIdAndUpdate(id, updateData, {
-      new: true,
-    });
+    const doc = await this.transactionModel.findByIdAndUpdate(
+      id,
+      updateData as any,
+      {
+        new: true,
+      },
+    );
     return doc ? this.mapper.toDomain(doc) : null;
   }
 
@@ -67,7 +79,9 @@ export class TransactionRepository implements TransactionRepositoryAbstract {
     return this.mapper.toDomainArray(docs);
   }
 
-  async findByProviderRefId(providerRefId: string): Promise<Transaction | null> {
+  async findByProviderRefId(
+    providerRefId: string,
+  ): Promise<Transaction | null> {
     const doc = await this.transactionModel.findOne({ providerRefId });
     return doc ? this.mapper.toDomain(doc) : null;
   }

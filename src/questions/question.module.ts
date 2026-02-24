@@ -1,6 +1,9 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { QuestionDocument, QuestionSchema } from './infrastructure/persistence/document/schemas/question.schema';
+import {
+  QuestionDocument,
+  QuestionSchema,
+} from './infrastructure/persistence/document/schemas/question.schema';
 import { QuestionRepository } from './infrastructure/persistence/document/repositories/question.repository';
 import { QuestionRepositoryAbstract } from './infrastructure/persistence/document/repositories/question.repository.abstract';
 import { QuestionMapper } from './infrastructure/persistence/document/mappers/question.mapper';

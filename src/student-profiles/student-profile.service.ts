@@ -4,9 +4,13 @@ import { StudentProfile } from './domain/student-profile';
 
 @Injectable()
 export class StudentProfileService {
-  constructor(private readonly studentProfileRepository: StudentProfileRepositoryAbstract) {}
+  constructor(
+    private readonly studentProfileRepository: StudentProfileRepositoryAbstract,
+  ) {}
 
-  async createProfile(data: Omit<StudentProfile, 'id' | 'createdAt' | 'updatedAt'>): Promise<StudentProfile> {
+  async createProfile(
+    data: Omit<StudentProfile, 'id' | 'createdAt' | 'updatedAt'>,
+  ): Promise<StudentProfile> {
     return this.studentProfileRepository.create(data);
   }
 
@@ -22,7 +26,10 @@ export class StudentProfileService {
     return this.studentProfileRepository.findAll();
   }
 
-  async updateProfile(id: string, data: Partial<StudentProfile>): Promise<StudentProfile | null> {
+  async updateProfile(
+    id: string,
+    data: Partial<StudentProfile>,
+  ): Promise<StudentProfile | null> {
     return this.studentProfileRepository.update(id, data);
   }
 
@@ -33,16 +40,28 @@ export class StudentProfileService {
   async addXp(id: string, xp: number): Promise<StudentProfile | null> {
     const profile = await this.getProfileById(id);
     if (!profile) return null;
-    return this.updateProfile(id, { ...profile, xpTotal: profile.xpTotal + xp });
+    return this.updateProfile(id, {
+      ...profile,
+      xpTotal: profile.xpTotal + xp,
+    });
   }
 
-  async addDiamonds(id: string, diamonds: number): Promise<StudentProfile | null> {
+  async addDiamonds(
+    id: string,
+    diamonds: number,
+  ): Promise<StudentProfile | null> {
     const profile = await this.getProfileById(id);
     if (!profile) return null;
-    return this.updateProfile(id, { ...profile, diamondBalance: profile.diamondBalance + diamonds });
+    return this.updateProfile(id, {
+      ...profile,
+      diamondBalance: profile.diamondBalance + diamonds,
+    });
   }
 
-  async updateStreak(id: string, streak: number): Promise<StudentProfile | null> {
+  async updateStreak(
+    id: string,
+    streak: number,
+  ): Promise<StudentProfile | null> {
     const profile = await this.getProfileById(id);
     if (!profile) return null;
     return this.updateProfile(id, { ...profile, currentStreak: streak });

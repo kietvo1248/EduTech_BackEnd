@@ -16,9 +16,12 @@ export class SubscriptionPlanDocument {
   features!: string[];
 }
 
-export type SubscriptionPlanDocumentType = HydratedDocument<SubscriptionPlanDocument> & {
-  createdAt: Date;
-  updatedAt: Date;
-};
+export type SubscriptionPlanDocumentType =
+  HydratedDocument<SubscriptionPlanDocument> & {
+    createdAt: Date;
+    updatedAt: Date;
+  };
 
-export const SubscriptionPlanSchema = SchemaFactory.createForClass(SubscriptionPlanDocument);
+export const SubscriptionPlanSchema = SchemaFactory.createForClass(
+  SubscriptionPlanDocument,
+);

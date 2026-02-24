@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { TeacherProfileDocument, TeacherProfileDocumentType } from '../schemas/teacher-profile.schema';
+import {
+  TeacherProfileDocument,
+  TeacherProfileDocumentType,
+} from '../schemas/teacher-profile.schema';
 import { TeacherProfileRepositoryAbstract } from './teacher-profile.repository.abstract';
 import { TeacherProfileMapper } from '../mappers/teacher-profile.mapper';
 import { TeacherProfile } from '../../../../domain/teacher-profile';
@@ -24,7 +27,9 @@ export class TeacherProfileRepository implements TeacherProfileRepositoryAbstrac
     return this.mapper.toDomainArray(docs);
   }
 
-  async create(data: Omit<TeacherProfile, 'id' | 'createdAt' | 'updatedAt'>): Promise<TeacherProfile> {
+  async create(
+    data: Omit<TeacherProfile, 'id' | 'createdAt' | 'updatedAt'>,
+  ): Promise<TeacherProfile> {
     const doc = await this.teacherProfileModel.create({
       userId: new Types.ObjectId(data.userId),
       fullName: data.fullName,
@@ -33,15 +38,22 @@ export class TeacherProfileRepository implements TeacherProfileRepositoryAbstrac
     return this.mapper.toDomain(doc);
   }
 
-  async update(id: string, data: Partial<TeacherProfile>): Promise<TeacherProfile | null> {
-    const updateData: any = {};
+  async update(
+    id: string,
+    data: Partial<TeacherProfile>,
+  ): Promise<TeacherProfile | null> {
+    const updateData: Record<string, unknown> = {};
     if (data.userId) updateData.userId = new Types.ObjectId(data.userId);
     if (data.fullName) updateData.fullName = data.fullName;
     if (data.bio !== undefined) updateData.bio = data.bio;
 
-    const doc = await this.teacherProfileModel.findByIdAndUpdate(id, updateData, {
-      new: true,
-    });
+    const doc = await this.teacherProfileModel.findByIdAndUpdate(
+      id,
+      updateData as any,
+      {
+        new: true,
+      },
+    );
     return doc ? this.mapper.toDomain(doc) : null;
   }
 

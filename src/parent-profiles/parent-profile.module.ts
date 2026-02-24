@@ -1,6 +1,9 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { ParentProfileDocument, ParentProfileSchema } from './infrastructure/persistence/document/schemas/parent-profile.schema';
+import {
+  ParentProfileDocument,
+  ParentProfileSchema,
+} from './infrastructure/persistence/document/schemas/parent-profile.schema';
 import { ParentProfileRepository } from './infrastructure/persistence/document/repositories/parent-profile.repository';
 import { ParentProfileRepositoryAbstract } from './infrastructure/persistence/document/repositories/parent-profile.repository.abstract';
 import { ParentProfileMapper } from './infrastructure/persistence/document/mappers/parent-profile.mapper';

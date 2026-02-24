@@ -1,6 +1,9 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { MaterialDocument, MaterialSchema } from './infrastructure/persistence/document/schemas/material.schema';
+import {
+  MaterialDocument,
+  MaterialSchema,
+} from './infrastructure/persistence/document/schemas/material.schema';
 import { MaterialRepository } from './infrastructure/persistence/document/repositories/material.repository';
 import { MaterialRepositoryAbstract } from './infrastructure/persistence/document/repositories/material.repository.abstract';
 import { MaterialMapper } from './infrastructure/persistence/document/mappers/material.mapper';

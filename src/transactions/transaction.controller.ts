@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Put, Delete, Param, Body } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Param,
+  Body,
+} from '@nestjs/common';
 import { TransactionService } from './transaction.service';
 
 @Controller('transactions')
@@ -41,10 +49,7 @@ export class TransactionController {
   }
 
   @Put(':id/status/:status')
-  async updateStatus(
-    @Param('id') id: string,
-    @Param('status') status: string,
-  ) {
+  async updateStatus(@Param('id') id: string, @Param('status') status: string) {
     return this.transactionService.updateTransactionStatus(id, status);
   }
 

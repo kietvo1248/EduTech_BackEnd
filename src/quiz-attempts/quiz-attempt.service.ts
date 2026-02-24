@@ -4,9 +4,13 @@ import { QuizAttempt } from './domain/quiz-attempt';
 
 @Injectable()
 export class QuizAttemptService {
-  constructor(private readonly quizAttemptRepository: QuizAttemptRepositoryAbstract) {}
+  constructor(
+    private readonly quizAttemptRepository: QuizAttemptRepositoryAbstract,
+  ) {}
 
-  async recordAttempt(data: Omit<QuizAttempt, 'id' | 'createdAt'>): Promise<QuizAttempt> {
+  async recordAttempt(
+    data: Omit<QuizAttempt, 'id' | 'createdAt'>,
+  ): Promise<QuizAttempt> {
     return this.quizAttemptRepository.create(data);
   }
 
@@ -30,11 +34,20 @@ export class QuizAttemptService {
     return this.quizAttemptRepository.findByQuestionId(questionId);
   }
 
-  async findByUserAndQuestion(userId: string, questionId: string): Promise<QuizAttempt[]> {
+  async findByUserAndQuestion(
+    userId: string,
+    questionId: string,
+  ): Promise<QuizAttempt[]> {
     return this.quizAttemptRepository.findByUserAndQuestion(userId, questionId);
   }
 
-  async getAttemptStats(userId: string): Promise<any> {
+  async getAttemptStats(userId: string): Promise<{
+    totalAttempts: number;
+    correctAttempts: number;
+    accuracy: string | number;
+    averageTimeSpentMs: number;
+    totalTimeSpentMs: number;
+  }> {
     return this.quizAttemptRepository.getAttemptStats(userId);
   }
 }
