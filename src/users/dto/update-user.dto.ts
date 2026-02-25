@@ -20,7 +20,7 @@ export class UpdateUserDto {
   @IsString()
   passwordHash?: string;
 
-  @ApiPropertyOptional({ enum: UserRole })
+  @ApiPropertyOptional({ enum: UserRole, enumName: 'UserRole' })
   @IsOptional()
   @IsEnum(UserRole)
   role?: UserRole;
@@ -36,7 +36,10 @@ export class UpdateUserDto {
   @IsBoolean()
   isActive?: boolean;
 
-  @ApiPropertyOptional({ enum: EmailVerificationStatus })
+  @ApiPropertyOptional({
+    enum: EmailVerificationStatus,
+    enumName: 'EmailVerificationStatus',
+  })
   @IsOptional()
   @IsEnum(EmailVerificationStatus)
   emailVerificationStatus?: EmailVerificationStatus;

@@ -8,6 +8,7 @@ import {
   Body,
 } from '@nestjs/common';
 import { ChapterService } from './chapter.service';
+import { CreateChapterDto, UpdateChapterDto } from './dto';
 
 @Controller('chapters')
 export class ChapterController {
@@ -29,12 +30,12 @@ export class ChapterController {
   }
 
   @Post()
-  async createChapter(@Body() data: any) {
+  async createChapter(@Body() data: CreateChapterDto) {
     return this.chapterService.createChapter(data);
   }
 
   @Put(':id')
-  async updateChapter(@Param('id') id: string, @Body() data: any) {
+  async updateChapter(@Param('id') id: string, @Body() data: UpdateChapterDto) {
     return this.chapterService.updateChapter(id, data);
   }
 

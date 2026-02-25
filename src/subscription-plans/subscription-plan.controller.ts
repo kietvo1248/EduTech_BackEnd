@@ -8,6 +8,7 @@ import {
   Body,
 } from '@nestjs/common';
 import { SubscriptionPlanService } from './subscription-plan.service';
+import { CreateSubscriptionPlanDto, UpdateSubscriptionPlanDto } from './dto';
 
 @Controller('subscription-plans')
 export class SubscriptionPlanController {
@@ -31,12 +32,15 @@ export class SubscriptionPlanController {
   }
 
   @Post()
-  async createPlan(@Body() data: any) {
+  async createPlan(@Body() data: CreateSubscriptionPlanDto) {
     return this.subscriptionPlanService.createPlan(data);
   }
 
   @Put(':id')
-  async updatePlan(@Param('id') id: string, @Body() data: any) {
+  async updatePlan(
+    @Param('id') id: string,
+    @Body() data: UpdateSubscriptionPlanDto,
+  ) {
     return this.subscriptionPlanService.updatePlan(id, data);
   }
 

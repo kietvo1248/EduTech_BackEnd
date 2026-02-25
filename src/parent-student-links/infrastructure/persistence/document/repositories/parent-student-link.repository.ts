@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Model, Types, UpdateQuery } from 'mongoose';
 import {
   ParentStudentLinkDocument,
   ParentStudentLinkDocumentType,
@@ -50,7 +50,7 @@ export class ParentStudentLinkRepository implements ParentStudentLinkRepositoryA
 
     const doc = await this.parentStudentLinkModel.findByIdAndUpdate(
       id,
-      updateData as any,
+      updateData as UpdateQuery<ParentStudentLinkDocumentType>,
       {
         new: true,
       },

@@ -6,83 +6,179 @@ import { UserRepositoryAbstract } from './repositories/user.repository.abstract'
 import { UserDocument, UserDocumentType } from './schemas/user.schema';
 import { UserMapper } from './mappers/user.mapper';
 import { UserRole, EmailVerificationStatus } from '../../../../enums';
+import { FilterUserDto, SortUserDto } from '../../../dto/query-user.dto';
+
+/** Sentinel filter applied to every query — never return soft-deleted records unless explicitly requested. */
+const NOT_DELETED = { isDeleted: { $ne: true } };
 
 @Injectable()
 export class UserRepository extends UserRepositoryAbstract {
+  private readonly model: Model<UserDocumentType>;
+  private readonly mapper: UserMapper;
+
   constructor(
     @InjectModel(UserDocument.name)
-    private readonly userModel: Model<UserDocumentType>,
-    private readonly mapper: UserMapper,
+    model: Model<UserDocumentType>,
+    mapper: UserMapper,
   ) {
     super();
+    this.model = model;
+    this.mapper = mapper;
   }
 
+  // ──────────────────────────────────────────────
+  // READ
+  // ──────────────────────────────────────────────
+
+  async findById(id: string): Promise<User | null> {
+    const doc = await this.model.findOne({ _id: id, ...NOT_DELETED }).exec();
+    return doc ? this.mapper.toDomain(doc) : null;
+  }
+
+  async findByEmail(email: string): Promise<User | null> {
+    const doc = await this.model.findOne({ email, ...NOT_DELETED }).exec();
+    return doc ? this.mapper.toDomain(doc) : null;
+  }
+
+  async findByVerificationToken(token: string): Promise<User | null> {
+    const doc = await this.model
+      .findOne({ emailVerificationToken: token, ...NOT_DELETED })
+      .exec();
+    return doc ? this.mapper.toDomain(doc) : null;
+  }
+
+  async findAllWithFilters(
+    limit = 10,
+    offset = 0,
+    filters?: FilterUserDto,
+    sort?: SortUserDto[],
+  ): Promise<[User[], number]> {
+    // Build dynamic filter
+
+    const query: Record<string, any> = {};
+
+    // Soft-delete gate: only show deleted records when caller explicitly asks
+    if (filters?.isDeleted === true) {
+      query.isDeleted = true;
+    } else {
+      query.isDeleted = { $ne: true };
+    }
+
+    // Role filter (OR across supplied roles)
+    if (filters?.roles && filters.roles.length > 0) {
+      query.role = { $in: filters.roles };
+    }
+
+    // Active status filter
+    if (filters?.isActive !== undefined && filters.isActive !== null) {
+      query.isActive = filters.isActive;
+    }
+
+    // Email verification status filter
+    if (filters?.emailVerificationStatus) {
+      query.emailVerificationStatus = filters.emailVerificationStatus;
+    }
+
+    // Partial email search (case-insensitive)
+    if (filters?.email) {
+      query.email = { $regex: filters.email, $options: 'i' };
+    }
+
+    // Build sort — default newest first
+    const sortObj: Record<string, 1 | -1> = {};
+    if (sort && sort.length > 0) {
+      for (const s of sort) {
+        sortObj[s.orderBy as string] = s.order === 'asc' ? 1 : -1;
+      }
+    } else {
+      sortObj.createdAt = -1;
+    }
+
+    const [docs, total] = await Promise.all([
+      this.model.find(query).sort(sortObj).skip(offset).limit(limit).exec(),
+      this.model.countDocuments(query).exec(),
+    ]);
+
+    return [this.mapper.toDomainArray(docs), total];
+  }
+
+  // ──────────────────────────────────────────────
+  // WRITE
+  // ──────────────────────────────────────────────
+
   async create(user: Partial<User>): Promise<User> {
-    const created = await this.userModel.create({
-      email: user.email,
-      passwordHash: user.passwordHash,
+    const doc = new this.model({
+      ...this.mapper.toDocument(user),
       role: user.role ?? UserRole.Student,
       avatarUrl: user.avatarUrl ?? null,
       isActive: user.isActive ?? true,
+      isDeleted: false,
+      deletedAt: null,
       emailVerificationStatus:
         user.emailVerificationStatus ?? EmailVerificationStatus.Pending,
       emailVerificationToken: user.emailVerificationToken ?? null,
       emailVerificationExpires: user.emailVerificationExpires ?? null,
     });
-    return this.mapper.toDomain(created);
-  }
-
-  async findById(id: string): Promise<User | null> {
-    const doc = await this.userModel.findById(id).exec();
-    return doc ? this.mapper.toDomain(doc) : null;
-  }
-
-  async findAll(limit = 10, offset = 0): Promise<[User[], number]> {
-    const [docs, total] = await Promise.all([
-      this.userModel
-        .find()
-        .sort({ createdAt: -1 })
-        .skip(offset)
-        .limit(limit)
-        .exec(),
-      this.userModel.countDocuments().exec(),
-    ]);
-    return [this.mapper.toDomainArray(docs), total];
+    const saved = await doc.save();
+    return this.mapper.toDomain(saved);
   }
 
   async update(id: string, user: Partial<User>): Promise<User | null> {
-    const updateData: Record<string, unknown> = {};
-    if (user.passwordHash !== undefined)
-      updateData.passwordHash = user.passwordHash;
-    if (user.role !== undefined) updateData.role = user.role;
-    if (user.avatarUrl !== undefined) updateData.avatarUrl = user.avatarUrl;
-    if (user.isActive !== undefined) updateData.isActive = user.isActive;
-    if (user.emailVerificationStatus !== undefined)
-      updateData.emailVerificationStatus = user.emailVerificationStatus;
-    if (user.emailVerificationToken !== undefined)
-      updateData.emailVerificationToken = user.emailVerificationToken;
-    if (user.emailVerificationExpires !== undefined)
-      updateData.emailVerificationExpires = user.emailVerificationExpires;
-
-    const doc = await this.userModel
-      .findByIdAndUpdate(id, updateData as any, { new: true })
+    const doc = await this.model
+      .findOneAndUpdate(
+        { _id: id, ...NOT_DELETED },
+        { $set: this.mapper.toDocument(user) },
+        { new: true },
+      )
       .exec();
     return doc ? this.mapper.toDomain(doc) : null;
   }
 
-  async delete(id: string): Promise<void> {
-    await this.userModel.findByIdAndDelete(id).exec();
-  }
-
-  async findByEmail(email: string): Promise<User | null> {
-    const doc = await this.userModel.findOne({ email }).exec();
-    return doc ? this.mapper.toDomain(doc) : null;
-  }
-
-  async findByVerificationToken(token: string): Promise<User | null> {
-    const doc = await this.userModel
-      .findOne({ emailVerificationToken: token })
+  /** Soft-delete: sets isDeleted=true, deletedAt=now. Record is never physically removed. */
+  async softDelete(id: string): Promise<void> {
+    await this.model
+      .findOneAndUpdate(
+        { _id: id, ...NOT_DELETED },
+        { $set: { isDeleted: true, deletedAt: new Date() } },
+      )
       .exec();
-    return doc ? this.mapper.toDomain(doc) : null;
+  }
+
+  // ──────────────────────────────────────────────
+  // AGGREGATION
+  // ──────────────────────────────────────────────
+
+  async getStatistics(): Promise<{
+    total: number;
+    byRole: Record<string, number>;
+    active: number;
+    inactive: number;
+    deleted: number;
+  }> {
+    const [total, active, inactive, deleted, byRoleAgg] = await Promise.all([
+      this.model.countDocuments({ ...NOT_DELETED }).exec(),
+      this.model.countDocuments({ isActive: true, ...NOT_DELETED }).exec(),
+      this.model.countDocuments({ isActive: false, ...NOT_DELETED }).exec(),
+      this.model.countDocuments({ isDeleted: true }).exec(),
+      this.model
+        .aggregate<{
+          _id: string;
+          count: number;
+        }>([
+          { $match: { isDeleted: { $ne: true } } },
+          { $group: { _id: '$role', count: { $sum: 1 } } },
+        ])
+        .exec(),
+    ]);
+
+    const byRole: Record<string, number> = Object.values(UserRole).reduce(
+      (acc, r) => ({ ...acc, [r]: 0 }),
+      {},
+    );
+    for (const entry of byRoleAgg) {
+      byRole[entry._id] = entry.count;
+    }
+
+    return { total, byRole, active, inactive, deleted };
   }
 }

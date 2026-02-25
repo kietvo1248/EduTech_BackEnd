@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Model, Types, UpdateQuery } from 'mongoose';
 import {
   LessonProgressDocument,
   LessonProgressDocumentType,
@@ -53,7 +53,7 @@ export class LessonProgressRepository implements LessonProgressRepositoryAbstrac
 
     const doc = await this.lessonProgressModel.findByIdAndUpdate(
       id,
-      updateData as any,
+      updateData as UpdateQuery<LessonProgressDocumentType>,
       {
         new: true,
       },

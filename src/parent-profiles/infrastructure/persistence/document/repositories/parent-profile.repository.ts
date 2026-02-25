@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Model, Types, UpdateQuery } from 'mongoose';
 import {
   ParentProfileDocument,
   ParentProfileDocumentType,
@@ -49,7 +49,7 @@ export class ParentProfileRepository implements ParentProfileRepositoryAbstract 
 
     const doc = await this.parentProfileModel.findByIdAndUpdate(
       id,
-      updateData as any,
+      updateData as UpdateQuery<ParentProfileDocumentType>,
       {
         new: true,
       },

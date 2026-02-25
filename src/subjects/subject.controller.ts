@@ -8,6 +8,7 @@ import {
   Body,
 } from '@nestjs/common';
 import { SubjectService } from './subject.service';
+import { CreateSubjectDto, UpdateSubjectDto } from './dto';
 
 @Controller('subjects')
 export class SubjectController {
@@ -29,12 +30,12 @@ export class SubjectController {
   }
 
   @Post()
-  async createSubject(@Body() data: any) {
+  async createSubject(@Body() data: CreateSubjectDto) {
     return this.subjectService.createSubject(data);
   }
 
   @Put(':id')
-  async updateSubject(@Param('id') id: string, @Body() data: any) {
+  async updateSubject(@Param('id') id: string, @Body() data: UpdateSubjectDto) {
     return this.subjectService.updateSubject(id, data);
   }
 

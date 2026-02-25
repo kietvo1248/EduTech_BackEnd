@@ -8,6 +8,7 @@ import {
   Body,
 } from '@nestjs/common';
 import { NotificationService } from './notification.service';
+import { CreateNotificationDto } from './dto';
 
 @Controller('notifications')
 export class NotificationController {
@@ -35,7 +36,7 @@ export class NotificationController {
   }
 
   @Post()
-  async createNotification(@Body() data: any) {
+  async createNotification(@Body() data: CreateNotificationDto) {
     return this.notificationService.createNotification(data);
   }
 

@@ -9,6 +9,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { ParentStudentLinkService } from './parent-student-link.service';
+import { CreateParentStudentLinkDto, UpdateParentStudentLinkDto } from './dto';
 
 @Controller('parent-student-links')
 export class ParentStudentLinkController {
@@ -57,20 +58,25 @@ export class ParentStudentLinkController {
   }
 
   @Get()
-  async getAllLinks(@Query() filters?: any) {
+  async getAllLinks(@Query() filters?: Record<string, unknown>) {
     if (Object.keys(filters || {}).length > 0) {
-      return this.parentStudentLinkService.filterLinks(filters);
+      return this.parentStudentLinkService.filterLinks(
+        filters as Record<string, unknown>,
+      );
     }
     return this.parentStudentLinkService.getAllLinks();
   }
 
   @Post()
-  async createLink(@Body() data: any) {
+  async createLink(@Body() data: CreateParentStudentLinkDto) {
     return this.parentStudentLinkService.createLink(data);
   }
 
   @Put(':id')
-  async updateLink(@Param('id') id: string, @Body() data: any) {
+  async updateLink(
+    @Param('id') id: string,
+    @Body() data: UpdateParentStudentLinkDto,
+  ) {
     return this.parentStudentLinkService.updateLink(id, data);
   }
 

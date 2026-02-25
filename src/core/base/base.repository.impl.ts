@@ -1,19 +1,38 @@
 import { Injectable } from '@nestjs/common';
-import { DataSource, ObjectLiteral } from 'typeorm';
+import { Model, HydratedDocument } from 'mongoose';
 import { BaseRepository } from './base.repository';
 
 /**
- * Concrete implementation of BaseRepository that can be instantiated
+ * Concrete implementation of BaseRepository for MongoDB/Mongoose
+ * This can be used when you need a simple repository without custom methods
+ *
+ * @template TDomain - Domain model type
+ * @template TDocument - Mongoose document class type
+ * @template TDocumentType - Hydrated document type
  */
 @Injectable()
 export class BaseRepositoryImpl<
-  T extends ObjectLiteral,
-> extends BaseRepository<T> {
+  TDomain,
+  TDocument,
+  TDocumentType extends HydratedDocument<TDocument>,
+> extends BaseRepository<TDomain, TDocument, TDocumentType> {
+  protected model: Model<TDocumentType>;
+  protected mapper: {
+    toDomain(document: TDocumentType): TDomain;
+    toDomainArray(documents: TDocumentType[]): TDomain[];
+    toDocument?(domain: Partial<TDomain>): Partial<TDocument>;
+  };
+
   constructor(
-    dataSource: DataSource,
-    private entityClass: new () => T,
+    model: Model<TDocumentType>,
+    mapper: {
+      toDomain(document: TDocumentType): TDomain;
+      toDomainArray(documents: TDocumentType[]): TDomain[];
+      toDocument?(domain: Partial<TDomain>): Partial<TDocument>;
+    },
   ) {
-    super(dataSource);
-    this.repository = dataSource.getRepository(entityClass);
+    super();
+    this.model = model;
+    this.mapper = mapper;
   }
 }

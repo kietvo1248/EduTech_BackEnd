@@ -8,6 +8,7 @@ import {
   Body,
 } from '@nestjs/common';
 import { MaterialService } from './material.service';
+import { CreateMaterialDto, UpdateMaterialDto } from './dto';
 
 @Controller('materials')
 export class MaterialController {
@@ -29,12 +30,15 @@ export class MaterialController {
   }
 
   @Post()
-  async createMaterial(@Body() data: any) {
+  async createMaterial(@Body() data: CreateMaterialDto) {
     return this.materialService.createMaterial(data);
   }
 
   @Put(':id')
-  async updateMaterial(@Param('id') id: string, @Body() data: any) {
+  async updateMaterial(
+    @Param('id') id: string,
+    @Body() data: UpdateMaterialDto,
+  ) {
     return this.materialService.updateMaterial(id, data);
   }
 

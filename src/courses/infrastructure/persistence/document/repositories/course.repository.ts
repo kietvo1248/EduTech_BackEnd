@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Model, Types, UpdateQuery } from 'mongoose';
 import { CourseDocument, CourseDocumentType } from '../schemas/course.schema';
 import { CourseRepositoryAbstract } from './course.repository.abstract';
 import { CourseMapper } from '../mappers/course.mapper';
@@ -56,7 +56,7 @@ export class CourseRepository implements CourseRepositoryAbstract {
 
     const doc = await this.courseModel.findByIdAndUpdate(
       id,
-      updateData as any,
+      updateData as UpdateQuery<CourseDocumentType>,
       {
         new: true,
       },

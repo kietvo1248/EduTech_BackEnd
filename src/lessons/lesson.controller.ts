@@ -8,6 +8,7 @@ import {
   Body,
 } from '@nestjs/common';
 import { LessonService } from './lesson.service';
+import { CreateLessonDto, UpdateLessonDto } from './dto';
 
 @Controller('lessons')
 export class LessonController {
@@ -29,12 +30,12 @@ export class LessonController {
   }
 
   @Post()
-  async createLesson(@Body() data: any) {
+  async createLesson(@Body() data: CreateLessonDto) {
     return this.lessonService.createLesson(data);
   }
 
   @Put(':id')
-  async updateLesson(@Param('id') id: string, @Body() data: any) {
+  async updateLesson(@Param('id') id: string, @Body() data: UpdateLessonDto) {
     return this.lessonService.updateLesson(id, data);
   }
 

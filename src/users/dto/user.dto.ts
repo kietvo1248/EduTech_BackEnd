@@ -1,30 +1,49 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { UserRole } from '../../enums';
+import { UserRole, EmailVerificationStatus } from '../../enums';
 
 export class UserDto {
-  @ApiProperty()
+  @ApiProperty({ description: 'MongoDB document id' })
   id!: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: 'user@example.com' })
   email!: string;
 
-  @ApiPropertyOptional()
-  passwordHash?: string;
-
-  @ApiProperty({ enum: UserRole })
+  @ApiProperty({ enum: UserRole, enumName: 'UserRole' })
   role!: UserRole;
 
-  @ApiProperty({ nullable: true })
-  subscriptionExpiresAt?: Date | null;
+  @ApiPropertyOptional({
+    type: String,
+    nullable: true,
+    example: 'https://cdn.example.com/avatar.png',
+  })
+  avatarUrl?: string | null;
 
-  @ApiProperty({ nullable: true })
-  avatar?: string | null;
-
-  @ApiProperty({ nullable: true })
-  bio?: string | null;
-
-  @ApiProperty()
+  @ApiProperty({ description: 'Whether the account is active' })
   isActive!: boolean;
+
+  @ApiProperty({
+    description: 'Soft-delete flag; true means the record has been deleted',
+  })
+  isDeleted!: boolean;
+
+  @ApiPropertyOptional({
+    type: Date,
+    nullable: true,
+    description: 'Timestamp of soft deletion',
+  })
+  deletedAt?: Date | null;
+
+  @ApiProperty({
+    enum: EmailVerificationStatus,
+    enumName: 'EmailVerificationStatus',
+  })
+  emailVerificationStatus!: EmailVerificationStatus;
+
+  @ApiPropertyOptional({ type: String, nullable: true })
+  emailVerificationToken?: string | null;
+
+  @ApiPropertyOptional({ type: Date, nullable: true })
+  emailVerificationExpires?: Date | null;
 
   @ApiProperty()
   createdAt!: Date;

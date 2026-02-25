@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Model, Types, UpdateQuery } from 'mongoose';
 import {
   TransactionDocument,
   TransactionDocumentType,
@@ -55,7 +55,7 @@ export class TransactionRepository implements TransactionRepositoryAbstract {
 
     const doc = await this.transactionModel.findByIdAndUpdate(
       id,
-      updateData as any,
+      updateData as UpdateQuery<TransactionDocumentType>,
       {
         new: true,
       },

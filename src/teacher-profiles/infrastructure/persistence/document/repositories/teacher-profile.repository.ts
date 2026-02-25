@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Model, Types, UpdateQuery } from 'mongoose';
 import {
   TeacherProfileDocument,
   TeacherProfileDocumentType,
@@ -49,7 +49,7 @@ export class TeacherProfileRepository implements TeacherProfileRepositoryAbstrac
 
     const doc = await this.teacherProfileModel.findByIdAndUpdate(
       id,
-      updateData as any,
+      updateData as UpdateQuery<TeacherProfileDocumentType>,
       {
         new: true,
       },

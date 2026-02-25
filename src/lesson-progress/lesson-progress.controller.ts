@@ -8,6 +8,7 @@ import {
   Body,
 } from '@nestjs/common';
 import { LessonProgressService } from './lesson-progress.service';
+import { CreateLessonProgressDto, UpdateLessonProgressDto } from './dto';
 
 @Controller('lesson-progress')
 export class LessonProgressController {
@@ -45,12 +46,15 @@ export class LessonProgressController {
   }
 
   @Post()
-  async createProgress(@Body() data: any) {
+  async trackProgress(@Body() data: CreateLessonProgressDto) {
     return this.lessonProgressService.createProgress(data);
   }
 
   @Put(':id')
-  async updateProgress(@Param('id') id: string, @Body() data: any) {
+  async updateProgress(
+    @Param('id') id: string,
+    @Body() data: UpdateLessonProgressDto,
+  ) {
     return this.lessonProgressService.updateProgress(id, data);
   }
 

@@ -9,6 +9,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { ParentProfileService } from './parent-profile.service';
+import { CreateParentProfileDto, UpdateParentProfileDto } from './dto';
 
 @Controller('parent-profiles')
 export class ParentProfileController {
@@ -30,20 +31,25 @@ export class ParentProfileController {
   }
 
   @Get()
-  async getAllProfiles(@Query() filters?: any) {
+  async getAllProfiles(@Query() filters?: Record<string, unknown>) {
     if (Object.keys(filters || {}).length > 0) {
-      return this.parentProfileService.filterProfiles(filters);
+      return this.parentProfileService.filterProfiles(
+        filters as Record<string, unknown>,
+      );
     }
     return this.parentProfileService.getAllProfiles();
   }
 
   @Post()
-  async createProfile(@Body() data: any) {
+  async createProfile(@Body() data: CreateParentProfileDto) {
     return this.parentProfileService.createProfile(data);
   }
 
   @Put(':id')
-  async updateProfile(@Param('id') id: string, @Body() data: any) {
+  async updateProfile(
+    @Param('id') id: string,
+    @Body() data: UpdateParentProfileDto,
+  ) {
     return this.parentProfileService.updateProfile(id, data);
   }
 

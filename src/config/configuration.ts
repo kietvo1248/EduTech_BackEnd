@@ -1,7 +1,7 @@
 const nodeEnv = process.env.NODE_ENV ?? 'development';
 
-const getEnv = (key: string, fallback?: string) =>
-  process.env[key] !== undefined ? process.env[key] : fallback;
+const getEnv = (key: string, fallback?: string): string =>
+  process.env[key] !== undefined ? process.env[key] : (fallback as string);
 
 export const getDatabaseConfig = () => ({
   mongoUri: getEnv('MONGODB_URI', 'mongodb://127.0.0.1:27017/edutech'),
@@ -13,6 +13,7 @@ export default () => ({
   app: {
     title: 'EduTech API',
     version: '1.0.0',
+    url: getEnv('APP_URL', 'http://localhost:3000'),
   },
   api: {
     prefix: getEnv('API_PREFIX', 'api'),
@@ -36,13 +37,34 @@ export default () => ({
       ),
     },
     facebook: {
-      appId: getEnv('FACEBOOK_APP_ID', 'dev-facebook-app-id'),
-      appSecret: getEnv('FACEBOOK_APP_SECRET', 'dev-facebook-app-secret'),
+      clientId: getEnv('FACEBOOK_APP_ID', 'dev-facebook-app-id'),
+      clientSecret: getEnv('FACEBOOK_APP_SECRET', 'dev-facebook-app-secret'),
       callbackURL: getEnv(
         'FACEBOOK_CALLBACK_URL',
         'http://localhost:3000/auth/facebook/callback',
       ),
     },
+  },
+  jwt: {
+    secret: getEnv('JWT_SECRET', 'dev-jwt-secret'),
+    expiresIn: getEnv('JWT_EXPIRES_IN', '8h'),
+    refreshSecret: getEnv('JWT_REFRESH_SECRET', 'dev-jwt-refresh-secret'),
+    refreshExpiresInDays: parseInt(
+      getEnv('JWT_REFRESH_EXPIRES_IN_DAYS', '7'),
+      10,
+    ),
+  },
+  mail: {
+    host: getEnv('SMTP_HOST', ''),
+    port: parseInt(getEnv('SMTP_PORT', '587'), 10),
+    secure: getEnv('SMTP_SECURE', 'false') === 'true',
+    user: getEnv('SMTP_USER', ''),
+    pass: getEnv('SMTP_PASS', ''),
+    fromEmail: getEnv('SMTP_FROM_EMAIL', 'no-reply@edutech.local'),
+    verificationTokenExpiresMinutes: parseInt(
+      getEnv('EMAIL_VERIFICATION_EXPIRES_MINUTES', String(24 * 60)),
+      10,
+    ),
   },
   cors: {
     origin: process.env.CORS_ORIGIN?.split(',').map((o) => o.trim()) ?? [

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Model, Types, UpdateQuery } from 'mongoose';
 import {
   UserSubscriptionDocument,
   UserSubscriptionDocumentType,
@@ -53,7 +53,7 @@ export class UserSubscriptionRepository implements UserSubscriptionRepositoryAbs
 
     const doc = await this.userSubscriptionModel.findByIdAndUpdate(
       id,
-      updateData as any,
+      updateData as UpdateQuery<UserSubscriptionDocumentType>,
       {
         new: true,
       },

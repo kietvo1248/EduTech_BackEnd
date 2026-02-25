@@ -13,9 +13,9 @@ export class EmailVerificationService {
     private readonly configService: ConfigService,
   ) {
     this.appUrl =
-      this.configService.get<string>('APP_URL') || 'http://localhost:8888';
+      this.configService.get<string>('app.url') ?? 'http://localhost:3000';
     this.verificationTokenExpirationMinutes =
-      this.configService.get<number>('EMAIL_VERIFICATION_EXPIRES_MINUTES') ||
+      this.configService.get<number>('mail.verificationTokenExpiresMinutes') ??
       24 * 60;
   }
 

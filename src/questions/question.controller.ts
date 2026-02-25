@@ -9,6 +9,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { QuestionService } from './question.service';
+import { CreateQuestionDto, UpdateQuestionDto } from './dto';
 
 @Controller('questions')
 export class QuestionController {
@@ -40,12 +41,15 @@ export class QuestionController {
   }
 
   @Post()
-  async createQuestion(@Body() data: any) {
+  async createQuestion(@Body() data: CreateQuestionDto) {
     return this.questionService.createQuestion(data);
   }
 
   @Put(':id')
-  async updateQuestion(@Param('id') id: string, @Body() data: any) {
+  async updateQuestion(
+    @Param('id') id: string,
+    @Body() data: UpdateQuestionDto,
+  ) {
     return this.questionService.updateQuestion(id, data);
   }
 

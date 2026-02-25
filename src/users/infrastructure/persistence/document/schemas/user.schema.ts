@@ -30,6 +30,12 @@ export class UserDocument {
 
   @Prop({ type: Date, default: null })
   emailVerificationExpires?: Date | null;
+
+  @Prop({ default: false })
+  isDeleted!: boolean;
+
+  @Prop({ type: Date, default: null })
+  deletedAt?: Date | null;
 }
 
 export type UserDocumentType = HydratedDocument<UserDocument> & {

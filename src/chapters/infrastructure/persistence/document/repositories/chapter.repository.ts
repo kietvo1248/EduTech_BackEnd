@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Model, Types, UpdateQuery } from 'mongoose';
 import {
   ChapterDocument,
   ChapterDocumentType,
@@ -46,7 +46,7 @@ export class ChapterRepository implements ChapterRepositoryAbstract {
 
     const doc = await this.chapterModel.findByIdAndUpdate(
       id,
-      updateData as any,
+      updateData as UpdateQuery<ChapterDocumentType>,
       {
         new: true,
       },

@@ -5,7 +5,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { JwtStrategy } from './strategies/jwt.strategy';
-import { RolesGuard } from './guards/roles.guard';
+import { RolesGuard } from '../roles/roles.guard';
 import { UsersModule } from '../users/users.module';
 import { StudentProfileModule } from '../student-profiles/student-profile.module';
 import { EmailVerificationService } from './services/email-verification.service';
@@ -22,7 +22,7 @@ import { MailerModule } from '../mailer';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET') ?? 'your-secret-key',
+        secret: configService.get<string>('jwt.secret'),
       }),
     }),
   ],

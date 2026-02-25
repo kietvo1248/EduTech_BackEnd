@@ -30,7 +30,7 @@ export class AuthService {
     private readonly studentProfileService: StudentProfileService,
   ) {
     this.refreshTokenExpirationDays =
-      this.configService.get<number>('REFRESH_TOKEN_EXPIRES_DAYS') || 7;
+      this.configService.get<number>('jwt.refreshExpiresInDays') ?? 7;
   }
 
   async signUp(dto: SignUpDto): Promise<{ user: User; message: string }> {
@@ -140,7 +140,7 @@ export class AuthService {
     try {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const payload = this.jwtService.verify(dto.refreshToken, {
-        secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
+        secret: this.configService.get<string>('jwt.refreshSecret'),
       });
 
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -160,13 +160,12 @@ export class AuthService {
   }
 
   createAccessToken(user: User): string {
-    return this.jwtService.sign(
-      { sub: user.id, email: user.email, role: user.role },
-      {
-        expiresIn: '15m',
-        secret: this.configService.get<string>('JWT_SECRET'),
-      },
-    );
+    const payload = { sub: user.id, email: user.email, role: user.role };
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    return this.jwtService.sign(payload, {
+      expiresIn: this.configService.getOrThrow<string>('jwt.expiresIn'),
+      secret: this.configService.getOrThrow<string>('jwt.secret'),
+    } as any);
   }
 
   private generateRefreshToken(userId: string): string {
@@ -182,7 +181,7 @@ export class AuthService {
     };
 
     return this.jwtService.sign(payload, {
-      secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
+      secret: this.configService.get<string>('jwt.refreshSecret'),
     });
   }
 
@@ -284,4 +283,3 @@ export class AuthService {
     return randomBytes(32).toString('hex');
   }
 }
-

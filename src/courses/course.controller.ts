@@ -8,6 +8,7 @@ import {
   Body,
 } from '@nestjs/common';
 import { CourseService } from './course.service';
+import { CreateCourseDto, UpdateCourseDto } from './dto';
 
 @Controller('courses')
 export class CourseController {
@@ -39,12 +40,12 @@ export class CourseController {
   }
 
   @Post()
-  async createCourse(@Body() data: any) {
+  async createCourse(@Body() data: CreateCourseDto) {
     return this.courseService.createCourse(data);
   }
 
   @Put(':id')
-  async updateCourse(@Param('id') id: string, @Body() data: any) {
+  async updateCourse(@Param('id') id: string, @Body() data: UpdateCourseDto) {
     return this.courseService.updateCourse(id, data);
   }
 

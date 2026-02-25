@@ -1,5 +1,6 @@
 import { Controller, Get, Post, Delete, Param, Body } from '@nestjs/common';
 import { QuizAttemptService } from './quiz-attempt.service';
+import { CreateQuizAttemptDto } from './dto';
 
 @Controller('quiz-attempts')
 export class QuizAttemptController {
@@ -45,7 +46,7 @@ export class QuizAttemptController {
   }
 
   @Post()
-  async recordAttempt(@Body() data: any) {
+  async recordAttempt(@Body() data: CreateQuizAttemptDto) {
     return this.quizAttemptService.recordAttempt(data);
   }
 

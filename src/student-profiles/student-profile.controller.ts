@@ -8,6 +8,7 @@ import {
   Body,
 } from '@nestjs/common';
 import { StudentProfileService } from './student-profile.service';
+import { CreateStudentProfileDto, UpdateStudentProfileDto } from './dto';
 
 @Controller('student-profiles')
 export class StudentProfileController {
@@ -29,12 +30,15 @@ export class StudentProfileController {
   }
 
   @Post()
-  async createProfile(@Body() data: any) {
+  async createProfile(@Body() data: CreateStudentProfileDto) {
     return this.studentProfileService.createProfile(data);
   }
 
   @Put(':id')
-  async updateProfile(@Param('id') id: string, @Body() data: any) {
+  async updateProfile(
+    @Param('id') id: string,
+    @Body() data: UpdateStudentProfileDto,
+  ) {
     return this.studentProfileService.updateProfile(id, data);
   }
 

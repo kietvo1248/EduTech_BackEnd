@@ -8,6 +8,7 @@ import {
   Body,
 } from '@nestjs/common';
 import { GradeLevelService } from './grade-level.service';
+import { CreateGradeLevelDto, UpdateGradeLevelDto } from './dto';
 
 @Controller('grade-levels')
 export class GradeLevelController {
@@ -29,12 +30,15 @@ export class GradeLevelController {
   }
 
   @Post()
-  async createGradeLevel(@Body() data: any) {
+  async createGradeLevel(@Body() data: CreateGradeLevelDto) {
     return this.gradeLevelService.createGradeLevel(data);
   }
 
   @Put(':id')
-  async updateGradeLevel(@Param('id') id: string, @Body() data: any) {
+  async updateGradeLevel(
+    @Param('id') id: string,
+    @Body() data: UpdateGradeLevelDto,
+  ) {
     return this.gradeLevelService.updateGradeLevel(id, data);
   }
 

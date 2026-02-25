@@ -7,6 +7,8 @@ export interface User {
   role: UserRole;
   avatarUrl?: string | null;
   isActive: boolean;
+  isDeleted: boolean;
+  deletedAt?: Date | null;
   emailVerificationStatus: EmailVerificationStatus;
   emailVerificationToken?: string | null;
   emailVerificationExpires?: Date | null;

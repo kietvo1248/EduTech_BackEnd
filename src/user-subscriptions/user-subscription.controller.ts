@@ -8,6 +8,7 @@ import {
   Body,
 } from '@nestjs/common';
 import { UserSubscriptionService } from './user-subscription.service';
+import { CreateUserSubscriptionDto, UpdateUserSubscriptionDto } from './dto';
 
 @Controller('user-subscriptions')
 export class UserSubscriptionController {
@@ -51,12 +52,15 @@ export class UserSubscriptionController {
   }
 
   @Post()
-  async createSubscription(@Body() data: any) {
+  async createSubscription(@Body() data: CreateUserSubscriptionDto) {
     return this.userSubscriptionService.createSubscription(data);
   }
 
   @Put(':id')
-  async updateSubscription(@Param('id') id: string, @Body() data: any) {
+  async updateSubscription(
+    @Param('id') id: string,
+    @Body() data: UpdateUserSubscriptionDto,
+  ) {
     return this.userSubscriptionService.updateSubscription(id, data);
   }
 

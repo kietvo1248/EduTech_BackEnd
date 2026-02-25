@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Model, Types, UpdateQuery } from 'mongoose';
 import {
   QuestionDocument,
   QuestionDocumentType,
@@ -54,7 +54,7 @@ export class QuestionRepository implements QuestionRepositoryAbstract {
 
     const doc = await this.questionModel.findByIdAndUpdate(
       id,
-      updateData as any,
+      updateData as UpdateQuery<QuestionDocumentType>,
       {
         new: true,
       },

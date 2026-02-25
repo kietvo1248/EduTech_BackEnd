@@ -13,11 +13,11 @@ export class MailerService {
   }
 
   private initializeTransporter() {
-    const host = this.configService.get<string>('SMTP_HOST');
-    const port = this.configService.get<number>('SMTP_PORT');
-    const secure = this.configService.get<string>('SMTP_SECURE') === 'true';
-    const user = this.configService.get<string>('SMTP_USER');
-    const pass = this.configService.get<string>('SMTP_PASS');
+    const host = this.configService.get<string>('mail.host');
+    const port = this.configService.get<number>('mail.port');
+    const secure = this.configService.get<boolean>('mail.secure') === true;
+    const user = this.configService.get<string>('mail.user');
+    const pass = this.configService.get<string>('mail.pass');
 
     if (!host || !user || !pass) {
       // Fallback to JSON transport in development when SMTP is not configured
@@ -40,7 +40,7 @@ export class MailerService {
   async sendMail(to: string, subject: string, html: string): Promise<void> {
     try {
       const mailOptions: nodemailer.SendMailOptions = {
-        from: this.configService.get<string>('SMTP_FROM_EMAIL'),
+        from: this.configService.get<string>('mail.fromEmail'),
         to,
         subject,
         html,

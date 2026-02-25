@@ -22,7 +22,11 @@ export class CreateUserDto {
   @MinLength(8)
   password?: string;
 
-  @ApiPropertyOptional({ enum: UserRole })
+  @ApiPropertyOptional({
+    enum: UserRole,
+    enumName: 'UserRole',
+    default: UserRole.Student,
+  })
   @IsOptional()
   @IsEnum(UserRole)
   role?: UserRole;
@@ -38,7 +42,10 @@ export class CreateUserDto {
   @IsBoolean()
   isActive?: boolean;
 
-  @ApiPropertyOptional({ enum: EmailVerificationStatus })
+  @ApiPropertyOptional({
+    enum: EmailVerificationStatus,
+    enumName: 'EmailVerificationStatus',
+  })
   @IsOptional()
   @IsEnum(EmailVerificationStatus)
   emailVerificationStatus?: EmailVerificationStatus | null;

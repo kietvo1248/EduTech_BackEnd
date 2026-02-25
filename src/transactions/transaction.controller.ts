@@ -8,6 +8,7 @@ import {
   Body,
 } from '@nestjs/common';
 import { TransactionService } from './transaction.service';
+import { CreateTransactionDto, UpdateTransactionDto } from './dto';
 
 @Controller('transactions')
 export class TransactionController {
@@ -39,12 +40,15 @@ export class TransactionController {
   }
 
   @Post()
-  async recordTransaction(@Body() data: any) {
+  async recordTransaction(@Body() data: CreateTransactionDto) {
     return this.transactionService.recordTransaction(data);
   }
 
   @Put(':id')
-  async updateTransaction(@Param('id') id: string, @Body() data: any) {
+  async updateTransaction(
+    @Param('id') id: string,
+    @Body() data: UpdateTransactionDto,
+  ) {
     return this.transactionService.updateTransaction(id, data);
   }
 

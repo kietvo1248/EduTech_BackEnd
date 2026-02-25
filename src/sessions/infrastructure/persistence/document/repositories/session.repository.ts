@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Model, Types, UpdateQuery } from 'mongoose';
 import {
   SessionDocument,
   SessionDocumentType,
@@ -48,7 +48,7 @@ export class SessionRepository implements SessionRepositoryAbstract {
 
     const doc = await this.sessionModel.findByIdAndUpdate(
       id,
-      updateData as any,
+      updateData as UpdateQuery<SessionDocumentType>,
       {
         new: true,
       },

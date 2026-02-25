@@ -55,7 +55,10 @@ export class AuthController extends BaseController {
   }
 
   @Get('email/verify')
-  @ApiOperation({ summary: 'Verify email with token from email link (Do not use this endpoint)' })
+  @ApiOperation({
+    summary:
+      'Verify email with token from email link (Do not use this endpoint)',
+  })
   @ApiResponse({
     status: 200,
     description: 'Email verified successfully - renders email-verified.hbs',
@@ -84,7 +87,9 @@ export class AuthController extends BaseController {
   }
 
   @Post('email/resend-verification')
-  @ApiOperation({ summary: 'Resend verification email (Do not use this endpoint)' })
+  @ApiOperation({
+    summary: 'Resend verification email (Do not use this endpoint)',
+  })
   @ApiResponse({
     status: 200,
     description: 'Verification email sent',
@@ -156,7 +161,10 @@ export class AuthController extends BaseController {
   }
 
   @Post('/migrate/users')
-  @ApiOperation({ summary: 'Migrate Fields For Users (Do not use this endpoint in production)' })
+  @ApiOperation({
+    summary:
+      'Migrate Fields For Users (Do not use this endpoint in production)',
+  })
   @ApiResponse({
     status: 201,
     description: 'Admin account created successfully',
@@ -165,9 +173,7 @@ export class AuthController extends BaseController {
     status: 400,
     description: 'Admin account already exists',
   })
-  async createAdmin(
-    @Res() res: Response,
-  ): Promise<Response> {
+  async createAdmin(@Res() res: Response): Promise<Response> {
     const admin = await this.authService.createAdminAccount();
     return this.sendSuccess(
       res,
@@ -183,4 +189,3 @@ export class AuthController extends BaseController {
     );
   }
 }
-

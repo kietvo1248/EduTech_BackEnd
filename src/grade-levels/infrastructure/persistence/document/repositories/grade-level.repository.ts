@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, UpdateQuery } from 'mongoose';
 import {
   GradeLevelDocument,
   GradeLevelDocumentType,
@@ -47,7 +47,7 @@ export class GradeLevelRepository implements GradeLevelRepositoryAbstract {
 
     const doc = await this.gradeLevelModel.findByIdAndUpdate(
       id,
-      updateData as any,
+      updateData as UpdateQuery<GradeLevelDocumentType>,
       {
         new: true,
       },

@@ -1,16 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { QueryUserDto } from './dto/query-user.dto';
 import { User } from './domain/user';
 import { UserRepositoryAbstract } from './infrastructure/persistence/document/repositories/user.repository.abstract';
 import { UserRole } from '../enums';
 import { BaseService } from '../core/base/base.service';
+import { infinityPagination } from '../utils/infinity-pagination';
+import { InfinityPaginationResponseDto } from '../utils/dto/infinity-pagination-response.dto';
 
 @Injectable()
 export class UsersService extends BaseService {
   constructor(private readonly userRepository: UserRepositoryAbstract) {
     super();
   }
+
+  // ──────────────────────────────────────────────
+  // CREATE
+  // ──────────────────────────────────────────────
 
   async create(dto: CreateUserDto | Record<string, unknown>): Promise<User> {
     const typedDto = dto as Partial<CreateUserDto> & Record<string, unknown>;
@@ -26,7 +33,6 @@ export class UsersService extends BaseService {
       emailVerificationExpires: typedDto.emailVerificationExpires,
     };
 
-    // Only include verification status if it's not null/undefined
     const verificationStatus = typedDto.emailVerificationStatus as
       | string
       | undefined;
@@ -38,6 +44,10 @@ export class UsersService extends BaseService {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     return this.userRepository.create(createData);
   }
+
+  // ──────────────────────────────────────────────
+  // READ
+  // ──────────────────────────────────────────────
 
   async findById(id: string): Promise<User | null> {
     return this.userRepository.findById(id);
@@ -51,21 +61,50 @@ export class UsersService extends BaseService {
     return this.userRepository.findByVerificationToken(token);
   }
 
-  async findAll(limit?: number, offset?: number): Promise<[User[], number]> {
-    return this.userRepository.findAll(limit ?? 10, offset ?? 0);
+  async findAll(
+    query: QueryUserDto,
+  ): Promise<InfinityPaginationResponseDto<User>> {
+    const limit = query.limit ?? 10;
+    const page = query.page ?? 1;
+    const offset = (page - 1) * limit;
+
+    const [users] = await this.userRepository.findAllWithFilters(
+      limit,
+      offset,
+      query.filters ?? undefined,
+      query.sort ?? undefined,
+    );
+
+    return infinityPagination(users, { page, limit });
   }
+
+  // ──────────────────────────────────────────────
+  // UPDATE
+  // ──────────────────────────────────────────────
 
   async update(id: string, dto: UpdateUserDto): Promise<User> {
-    const updatedUser = await this.userRepository.update(id, dto);
-    if (!updatedUser) {
-      throw new Error(`User with id ${id} not found`);
-    }
-    return updatedUser;
+    const updated = await this.userRepository.update(id, dto);
+    if (!updated) throw new Error(`User with id ${id} not found`);
+    return updated;
   }
 
-  async delete(id: string): Promise<void> {
-    return this.userRepository.delete(id);
+  async updateStatus(id: string, isActive: boolean): Promise<User> {
+    const user = await this.findById(id);
+    if (!user) throw new Error(`User with id ${id} not found`);
+    return this.userRepository.update(id, { isActive }) as Promise<User>;
   }
+
+  // ──────────────────────────────────────────────
+  // DELETE (soft)
+  // ──────────────────────────────────────────────
+
+  async delete(id: string): Promise<void> {
+    return this.userRepository.softDelete(id);
+  }
+
+  // ──────────────────────────────────────────────
+  // SOCIAL AUTH
+  // ──────────────────────────────────────────────
 
   async upsertSocialUser(payload: {
     provider: string;
@@ -74,29 +113,40 @@ export class UsersService extends BaseService {
     displayName?: string | null;
     avatarUrl?: string | null;
   }): Promise<User> {
-    // Try to find existing user by email
     if (payload.email) {
-      const existingByEmail = await this.findByEmail(payload.email);
-      if (existingByEmail) {
-        // Update avatar if provided
-        if (payload.avatarUrl && !existingByEmail.avatarUrl) {
-          await this.userRepository.update(existingByEmail.id, {
+      const existing = await this.findByEmail(payload.email);
+      if (existing) {
+        if (payload.avatarUrl && !existing.avatarUrl) {
+          await this.userRepository.update(existing.id, {
             avatarUrl: payload.avatarUrl,
             isActive: true,
           });
-          return (await this.findById(existingByEmail.id)) as User;
+          return (await this.findById(existing.id)) as User;
         }
-        return existingByEmail;
+        return existing;
       }
     }
 
-    // Create new user for social login
     return this.userRepository.create({
       email: payload.email ?? `${payload.providerId}@${payload.provider}.local`,
-      passwordHash: null, // Social users don't have password
+      passwordHash: null,
       role: UserRole.Student,
       avatarUrl: payload.avatarUrl ?? null,
       isActive: true,
     });
+  }
+
+  // ──────────────────────────────────────────────
+  // ADMIN AGGREGATION
+  // ──────────────────────────────────────────────
+
+  async getStatistics(): Promise<{
+    total: number;
+    byRole: Record<string, number>;
+    active: number;
+    inactive: number;
+    deleted: number;
+  }> {
+    return this.userRepository.getStatistics();
   }
 }

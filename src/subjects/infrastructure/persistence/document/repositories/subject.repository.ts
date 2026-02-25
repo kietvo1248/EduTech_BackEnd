@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, UpdateQuery } from 'mongoose';
 import {
   SubjectDocument,
   SubjectDocumentType,
@@ -46,7 +46,7 @@ export class SubjectRepository implements SubjectRepositoryAbstract {
 
     const doc = await this.subjectModel.findByIdAndUpdate(
       id,
-      updateData as any,
+      updateData as UpdateQuery<SubjectDocumentType>,
       {
         new: true,
       },
