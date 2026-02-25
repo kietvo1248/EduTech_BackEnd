@@ -255,7 +255,33 @@ export class AuthService {
     return { message: 'Verification email sent. Please check your inbox.' };
   }
 
+  async createAdminAccount(): Promise<User> {
+    const adminEmail = 'admin@edutech.local';
+    const adminPassword = 'Admin@123456';
+
+    // Check if admin already exists
+    const existingAdmin = await this.usersService.findByEmail(adminEmail);
+    if (existingAdmin) {
+      throw new BadRequestException('Admin account already exists');
+    }
+
+    const hashedPassword = await bcrypt.hash(adminPassword, 10);
+
+    const admin = await this.usersService.create({
+      email: adminEmail,
+      passwordHash: hashedPassword,
+      role: UserRole.Admin,
+      avatarUrl: null,
+      isActive: true,
+      emailVerificationStatus: EmailVerificationStatus.Verified,
+    });
+
+    this.logger.log(`Admin account created: ${adminEmail}`);
+    return admin;
+  }
+
   private generateVerificationToken(): string {
     return randomBytes(32).toString('hex');
   }
 }
+
