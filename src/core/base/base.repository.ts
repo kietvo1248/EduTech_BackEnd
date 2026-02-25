@@ -1,4 +1,9 @@
-import { Model, HydratedDocument, UpdateQuery, RootFilterQuery } from 'mongoose';
+import {
+  Model,
+  HydratedDocument,
+  UpdateQuery,
+  RootFilterQuery,
+} from 'mongoose';
 
 /**
  * Base repository abstract class with common repository patterns for MongoDB/Mongoose

@@ -9,7 +9,7 @@ type ErrorObject = Record<string, string | Record<string, unknown>>;
 
 function generateErrors(errors: ValidationError[]): ErrorObject {
   const result: ErrorObject = {};
-  
+
   for (const error of errors) {
     if (error.children && error.children.length > 0) {
       result[error.property] = generateErrors(error.children);
@@ -20,7 +20,7 @@ function generateErrors(errors: ValidationError[]): ErrorObject {
         : '';
     }
   }
-  
+
   return result;
 }
 
