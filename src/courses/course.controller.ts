@@ -213,7 +213,10 @@ export class CourseController extends BaseController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Create a new course (Admin/Teacher only)' })
   @ApiResponse({ status: 201, description: 'Course created successfully' })
-  @ApiResponse({ status: 403, description: 'Forbidden - Insufficient permissions' })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - Insufficient permissions',
+  })
   async createCourse(
     @Body() createCourseDto: CreateCourseDto,
     @CurrentUser() user: User,
@@ -251,7 +254,10 @@ export class CourseController extends BaseController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update course (Admin/Teacher only)' })
   @ApiResponse({ status: 200, description: 'Course updated successfully' })
-  @ApiResponse({ status: 403, description: 'Forbidden - Insufficient permissions' })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - Insufficient permissions',
+  })
   async updateCourse(
     @Param('id') id: string,
     @Body() updateCourseDto: UpdateCourseDto,
@@ -307,7 +313,10 @@ export class CourseController extends BaseController {
     status: 200,
     description: 'Course status updated successfully',
   })
-  @ApiResponse({ status: 403, description: 'Forbidden - Insufficient permissions' })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - Insufficient permissions',
+  })
   async updateCourseStatus(
     @Param('id') id: string,
     @Body() updateStatusDto: UpdateCourseStatusDto,
@@ -360,7 +369,10 @@ export class CourseController extends BaseController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Soft delete course (Admin/Teacher only)' })
   @ApiResponse({ status: 200, description: 'Course deleted successfully' })
-  @ApiResponse({ status: 403, description: 'Forbidden - Insufficient permissions' })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - Insufficient permissions',
+  })
   async deleteCourse(
     @Param('id') id: string,
     @CurrentUser() user: User,
@@ -405,7 +417,10 @@ export class CourseController extends BaseController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Restore soft deleted course (Admin/Teacher only)' })
   @ApiResponse({ status: 200, description: 'Course restored successfully' })
-  @ApiResponse({ status: 403, description: 'Forbidden - Insufficient permissions' })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - Insufficient permissions',
+  })
   async restoreCourse(
     @Param('id') id: string,
     @CurrentUser() user: User,
