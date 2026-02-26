@@ -29,6 +29,9 @@ import { SubscriptionPlanModule } from './subscription-plans';
 import { UserSubscriptionModule } from './user-subscriptions';
 import { TransactionModule } from './transactions';
 import { NotificationModule } from './notifications';
+import { LearningPathModule } from './learning-path';
+import { SequentialLearningModule } from './sequential-learning';
+import { DashboardModule } from './dashboard';
 
 @Module({
   imports: [
@@ -65,6 +68,9 @@ import { NotificationModule } from './notifications';
     UserSubscriptionModule,
     TransactionModule,
     NotificationModule,
+    LearningPathModule,
+    SequentialLearningModule,
+    DashboardModule,
   ],
 })
 export class AppModule {}

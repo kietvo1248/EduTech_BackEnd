@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNotEmpty, IsBoolean } from 'class-validator';
+import { IsString, IsNotEmpty, IsBoolean, IsEnum, IsOptional } from 'class-validator';
+import { GradeLevel, CourseStatus, CourseType } from '../../enums';
 
 export class CreateCourseDto {
   @ApiProperty({
@@ -19,12 +20,12 @@ export class CreateCourseDto {
   gradeLevelId!: string;
 
   @ApiProperty({
-    description: 'Author ID (user who created the course)',
-    example: '507f1f77bcf86cd799439013',
+    description: 'Grade level (10, 11, 12) for content filtering',
+    enum: GradeLevel,
+    example: GradeLevel.Grade10,
   })
-  @IsString()
-  @IsNotEmpty()
-  authorId!: string;
+  @IsEnum(GradeLevel)
+  gradeLevel!: GradeLevel;
 
   @ApiProperty({
     description: 'Course title',
@@ -51,16 +52,19 @@ export class CreateCourseDto {
   thumbnailUrl!: string;
 
   @ApiProperty({
-    description: 'Whether the course is published',
-    example: true,
+    description: 'Course type (Free or Premium)',
+    enum: CourseType,
+    example: CourseType.Free,
   })
-  @IsBoolean()
-  isPublished!: boolean;
+  @IsEnum(CourseType)
+  type!: CourseType;
 
   @ApiProperty({
     description: 'Whether the course requires a pro subscription',
     example: false,
+    required: false,
   })
   @IsBoolean()
-  isPro!: boolean;
+  @IsOptional()
+  isPro?: boolean;
 }

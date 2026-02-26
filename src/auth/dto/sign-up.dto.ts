@@ -37,10 +37,10 @@ export class SignUpDto {
 
   @ApiProperty({
     enum: GradeLevel,
-    description: 'Grade level from 1 to 12',
-    required: false,
+    description: 'Grade level from 10 to 12 - Required for students',
+    required: true,
   })
-  @IsOptional()
+  @IsNotEmpty()
   @IsEnum(GradeLevel)
-  gradeLevel?: GradeLevel;
+  gradeLevel!: GradeLevel;
 }

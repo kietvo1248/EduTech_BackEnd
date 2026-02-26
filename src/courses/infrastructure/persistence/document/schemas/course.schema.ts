@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
+import { GradeLevel, CourseStatus, CourseType } from '../../../../../enums';
 
 @Schema({ timestamps: true, collection: 'courses' })
 export class CourseDocument {
@@ -8,6 +9,9 @@ export class CourseDocument {
 
   @Prop({ required: true, type: Types.ObjectId, ref: 'grade_levels' })
   gradeLevelId!: Types.ObjectId;
+
+  @Prop({ required: true, enum: GradeLevel })
+  gradeLevel!: GradeLevel;
 
   @Prop({ required: true, type: Types.ObjectId, ref: 'users' })
   authorId!: Types.ObjectId;
@@ -21,11 +25,21 @@ export class CourseDocument {
   @Prop({ required: true })
   thumbnailUrl!: string;
 
-  @Prop({ default: false })
-  isPublished!: boolean;
+  @Prop({ enum: CourseStatus, default: CourseStatus.Draft })
+  status!: CourseStatus;
+
+  @Prop({ enum: CourseType, default: CourseType.Free })
+  type!: CourseType;
 
   @Prop({ default: false })
   isPro!: boolean;
+
+  // Soft Delete Fields
+  @Prop({ default: false })
+  isDeleted!: boolean;
+
+  @Prop({ type: Date, default: null })
+  deletedAt!: Date | null;
 }
 
 export type CourseDocumentType = HydratedDocument<CourseDocument> & {

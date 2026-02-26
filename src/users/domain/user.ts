@@ -1,4 +1,11 @@
-import { UserRole, EmailVerificationStatus } from '../../enums';
+import { UserRole, EmailVerificationStatus, GradeLevel } from '../../enums';
+
+export interface StudentProfile {
+  gradeLevel: GradeLevel;
+  currentStreak: number;
+  diamondBalance: number;
+  xpTotal: number;
+}
 
 export interface User {
   id: string;
@@ -9,6 +16,7 @@ export interface User {
   isActive: boolean;
   isDeleted: boolean;
   deletedAt?: Date | null;
+  studentProfile?: StudentProfile | null;
   emailVerificationStatus: EmailVerificationStatus;
   emailVerificationToken?: string | null;
   emailVerificationExpires?: Date | null;

@@ -16,6 +16,10 @@ export class LessonService {
     return this.lessonRepository.findById(id);
   }
 
+  async findById(id: string): Promise<Lesson | null> {
+    return this.getLessonById(id);
+  }
+
   async getAllLessons(): Promise<Lesson[]> {
     return this.lessonRepository.findAll();
   }
@@ -33,6 +37,18 @@ export class LessonService {
 
   async findByChapterId(chapterId: string): Promise<Lesson[]> {
     return this.lessonRepository.findByChapterId(chapterId);
+  }
+
+  async findByChapterIdOrdered(chapterId: string): Promise<Lesson[]> {
+    return this.lessonRepository.findByChapterIdOrdered(chapterId);
+  }
+
+  async findByCourseId(courseId: string): Promise<Lesson[]> {
+    return this.lessonRepository.findByCourseId(courseId);
+  }
+
+  async findPreviousLesson(lessonId: string): Promise<Lesson | null> {
+    return this.lessonRepository.findPreviousLesson(lessonId);
   }
 
   async updateDuration(

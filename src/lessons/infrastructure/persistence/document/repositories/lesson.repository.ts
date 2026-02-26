@@ -76,4 +76,38 @@ export class LessonRepository implements LessonRepositoryAbstract {
       .sort({ orderIndex: 1 });
     return this.mapper.toDomainArray(docs);
   }
+
+  async findByChapterIdOrdered(chapterId: string): Promise<Lesson[]> {
+    const docs = await this.lessonModel
+      .find({
+        chapterId: new Types.ObjectId(chapterId),
+      })
+      .sort({ orderIndex: 1 });
+    return this.mapper.toDomainArray(docs);
+  }
+
+  async findByCourseId(courseId: string): Promise<Lesson[]> {
+    const docs = await this.lessonModel
+      .find({
+        courseId: new Types.ObjectId(courseId),
+      })
+      .sort({ orderIndex: 1 });
+    return this.mapper.toDomainArray(docs);
+  }
+
+  async findPreviousLesson(lessonId: string): Promise<Lesson | null> {
+    const currentLesson = await this.findById(lessonId);
+    if (!currentLesson || !currentLesson.chapterId) {
+      return null;
+    }
+
+    const doc = await this.lessonModel
+      .findOne({
+        chapterId: new Types.ObjectId(currentLesson.chapterId),
+        orderIndex: { $lt: currentLesson.orderIndex || 0 },
+      })
+      .sort({ orderIndex: -1 });
+
+    return doc ? this.mapper.toDomain(doc) : null;
+  }
 }

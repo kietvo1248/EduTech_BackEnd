@@ -9,9 +9,16 @@ export class QuizAttemptMapper {
       id: doc._id.toString(),
       userId: doc.userId.toString(),
       questionId: doc.questionId.toString(),
+      quizId: doc.quizId?.toString(),
+      lessonId: doc.lessonId?.toString(),
       isCorrect: doc.isCorrect,
       userAnswer: doc.userAnswer,
+      score: doc.score,
+      totalQuestions: doc.totalQuestions,
+      correctAnswers: doc.correctAnswers,
+      answers: doc.answers || [],
       timeSpentMs: doc.timeSpentMs,
+      completedAt: doc.completedAt,
       createdAt: doc.createdAt,
     };
   }

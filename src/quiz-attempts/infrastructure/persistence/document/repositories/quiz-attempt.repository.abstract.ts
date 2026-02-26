@@ -13,6 +13,10 @@ export abstract class QuizAttemptRepositoryAbstract {
     userId: string,
     questionId: string,
   ): Promise<QuizAttempt[]>;
+  abstract findBestAttemptByUserAndQuiz(
+    userId: string,
+    quizId: string,
+  ): Promise<QuizAttempt | null>;
   abstract getAttemptStats(userId: string): Promise<{
     totalAttempts: number;
     correctAttempts: number;

@@ -30,13 +30,29 @@ export class QuizAttemptRepository implements QuizAttemptRepositoryAbstract {
   async create(
     data: Omit<QuizAttempt, 'id' | 'createdAt'>,
   ): Promise<QuizAttempt> {
-    const doc = await this.quizAttemptModel.create({
+    const createData: any = {
       userId: new Types.ObjectId(data.userId),
       questionId: new Types.ObjectId(data.questionId),
       isCorrect: data.isCorrect,
       userAnswer: data.userAnswer,
+      score: data.score,
+      totalQuestions: data.totalQuestions,
+      correctAnswers: data.correctAnswers,
+      answers: data.answers || [],
       timeSpentMs: data.timeSpentMs,
-    });
+    };
+
+    if (data.quizId) {
+      createData.quizId = new Types.ObjectId(data.quizId);
+    }
+    if (data.lessonId) {
+      createData.lessonId = new Types.ObjectId(data.lessonId);
+    }
+    if (data.completedAt) {
+      createData.completedAt = data.completedAt;
+    }
+
+    const doc = await this.quizAttemptModel.create(createData);
     return this.mapper.toDomain(doc);
   }
 
@@ -124,5 +140,19 @@ export class QuizAttemptRepository implements QuizAttemptRepositoryAbstract {
           averageTimeSpentMs: 0,
           totalTimeSpentMs: 0,
         };
+  }
+
+  async findBestAttemptByUserAndQuiz(
+    userId: string,
+    quizId: string,
+  ): Promise<QuizAttempt | null> {
+    const doc = await this.quizAttemptModel
+      .findOne({
+        userId: new Types.ObjectId(userId),
+        quizId: new Types.ObjectId(quizId),
+      })
+      .sort({ score: -1, createdAt: -1 });
+
+    return doc ? this.mapper.toDomain(doc) : null;
   }
 }

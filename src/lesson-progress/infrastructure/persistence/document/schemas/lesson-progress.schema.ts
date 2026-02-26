@@ -14,6 +14,27 @@ export class LessonProgressDocument {
 
   @Prop({ default: 0 })
   lastWatchedSec!: number;
+
+  @Prop({ default: 0, min: 0, max: 100 })
+  progressPercent!: number;
+
+  @Prop({ default: false })
+  videoWatched!: boolean;
+
+  @Prop({ default: 0 })
+  videoCurrentTime!: number;
+
+  @Prop({ default: 0 })
+  videoDuration!: number;
+
+  @Prop({ default: false })
+  quizCompleted!: boolean;
+
+  @Prop({ min: 0, max: 100 })
+  quizScore?: number;
+
+  @Prop({ type: Date })
+  lastWatchedAt?: Date;
 }
 
 export type LessonProgressDocumentType =

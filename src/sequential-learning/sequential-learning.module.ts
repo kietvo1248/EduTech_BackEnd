@@ -1,0 +1,18 @@
+import { Module } from '@nestjs/common';
+import { SequentialLearningController } from './sequential-learning.controller';
+import { SequentialLearningService } from './sequential-learning.service';
+import { LessonProgressModule } from '../lesson-progress/lesson-progress.module';
+import { QuizAttemptModule } from '../quiz-attempts/quiz-attempt.module';
+import { LessonModule } from '../lessons/lesson.module';
+
+@Module({
+  imports: [
+    LessonProgressModule,
+    QuizAttemptModule,
+    LessonModule,
+  ],
+  controllers: [SequentialLearningController],
+  providers: [SequentialLearningService],
+  exports: [SequentialLearningService],
+})
+export class SequentialLearningModule {}

@@ -11,6 +11,13 @@ export class LessonProgressMapper {
       lessonId: doc.lessonId.toString(),
       isCompleted: doc.isCompleted,
       lastWatchedSec: doc.lastWatchedSec,
+      progressPercent: doc.progressPercent || 0,
+      videoWatched: doc.videoWatched || false,
+      videoCurrentTime: doc.videoCurrentTime || 0,
+      videoDuration: doc.videoDuration || 0,
+      quizCompleted: doc.quizCompleted || false,
+      quizScore: doc.quizScore,
+      lastWatchedAt: doc.lastWatchedAt,
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
     };

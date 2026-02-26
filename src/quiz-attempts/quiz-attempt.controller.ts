@@ -47,7 +47,14 @@ export class QuizAttemptController {
 
   @Post()
   async recordAttempt(@Body() data: CreateQuizAttemptDto) {
-    return this.quizAttemptService.recordAttempt(data);
+    const attemptData = {
+      ...data,
+      score: data.score ?? 0,
+      totalQuestions: data.totalQuestions ?? 0,
+      correctAnswers: data.correctAnswers ?? 0,
+      answers: data.answers ?? [],
+    };
+    return this.quizAttemptService.recordAttempt(attemptData);
   }
 
   @Delete(':id')

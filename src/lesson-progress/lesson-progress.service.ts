@@ -22,13 +22,6 @@ export class LessonProgressService {
     return this.lessonProgressRepository.findAll();
   }
 
-  async updateProgress(
-    id: string,
-    data: Partial<LessonProgress>,
-  ): Promise<LessonProgress | null> {
-    return this.lessonProgressRepository.update(id, data);
-  }
-
   async deleteProgress(id: string): Promise<void> {
     return this.lessonProgressRepository.delete(id);
   }
@@ -46,6 +39,54 @@ export class LessonProgressService {
     lessonId: string,
   ): Promise<LessonProgress | null> {
     return this.lessonProgressRepository.findByUserAndLesson(userId, lessonId);
+  }
+
+  async findByUserAndLesson(
+    userId: string,
+    lessonId: string,
+  ): Promise<LessonProgress | null> {
+    return this.lessonProgressRepository.findByUserAndLesson(userId, lessonId);
+  }
+
+  async updateProgressByUserAndLesson(
+    userId: string,
+    lessonId: string,
+    data: Partial<LessonProgress>,
+  ): Promise<LessonProgress | null> {
+    const existing = await this.findByUserAndLesson(userId, lessonId);
+    
+    if (existing) {
+      return this.lessonProgressRepository.update(existing.id, data);
+    } else {
+      // Tạo mới với default values
+      return this.lessonProgressRepository.create({
+        userId,
+        lessonId,
+        isCompleted: false,
+        lastWatchedSec: 0,
+        progressPercent: 0,
+        videoWatched: false,
+        videoCurrentTime: 0,
+        videoDuration: 0,
+        quizCompleted: false,
+        ...data,
+      });
+    }
+  }
+
+  // Overloaded updateProgress method - support both old and new signatures
+  async updateProgress(
+    idOrUserId: string,
+    dataOrLessonId?: Partial<LessonProgress> | string,
+    data?: Partial<LessonProgress>,
+  ): Promise<LessonProgress | null> {
+    if (typeof dataOrLessonId === 'string' && data) {
+      // New signature: updateProgress(userId, lessonId, data)
+      return this.updateProgressByUserAndLesson(idOrUserId, dataOrLessonId, data);
+    } else {
+      // Old signature: updateProgress(id, data)
+      return this.lessonProgressRepository.update(idOrUserId, dataOrLessonId as Partial<LessonProgress>);
+    }
   }
 
   async updateWatchedTime(
@@ -78,6 +119,11 @@ export class LessonProgressService {
       lessonId,
       isCompleted: true,
       lastWatchedSec: 0,
+      progressPercent: 0,
+      videoWatched: false,
+      videoCurrentTime: 0,
+      videoDuration: 0,
+      quizCompleted: false,
     });
   }
 }

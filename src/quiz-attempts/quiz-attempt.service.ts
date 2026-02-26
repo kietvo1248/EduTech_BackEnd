@@ -14,6 +14,19 @@ export class QuizAttemptService {
     return this.quizAttemptRepository.create(data);
   }
 
+  async create(
+    data: Omit<QuizAttempt, 'id' | 'createdAt'>,
+  ): Promise<QuizAttempt> {
+    return this.quizAttemptRepository.create(data);
+  }
+
+  async findBestAttemptByUserAndQuiz(
+    userId: string,
+    quizId: string,
+  ): Promise<QuizAttempt | null> {
+    return this.quizAttemptRepository.findBestAttemptByUserAndQuiz(userId, quizId);
+  }
+
   async getAttemptById(id: string): Promise<QuizAttempt | null> {
     return this.quizAttemptRepository.findById(id);
   }

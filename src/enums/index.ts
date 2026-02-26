@@ -6,3 +6,4 @@ export * from './subscription-status.enum';
 export * from './question-type.enum';
 export * from './difficulty.enum';
 export * from './transaction-status.enum';
+export * from './course-status.enum';
