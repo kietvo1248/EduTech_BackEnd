@@ -1,1 +1,5 @@
-export { CourseDocument, CourseSchema, CourseDocumentType } from './course.schema';
+export {
+  CourseDocument,
+  CourseSchema,
+  CourseDocumentType,
+} from './course.schema';
