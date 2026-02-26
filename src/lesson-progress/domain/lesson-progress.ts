@@ -7,7 +7,7 @@ export interface LessonProgress {
   progressPercent: number; // 0-100
   videoWatched: boolean;
   videoCurrentTime: number; // seconds
-  videoDuration: number; // seconds  
+  videoDuration: number; // seconds
   quizCompleted: boolean;
   quizScore?: number; // 0-100
   lastWatchedAt?: Date;

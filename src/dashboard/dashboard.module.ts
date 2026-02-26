@@ -4,10 +4,7 @@ import { LearningPathModule } from '../learning-path/learning-path.module';
 import { LessonProgressModule } from '../lesson-progress/lesson-progress.module';
 
 @Module({
-  imports: [
-    LearningPathModule,
-    LessonProgressModule,
-  ],
+  imports: [LearningPathModule, LessonProgressModule],
   controllers: [DashboardController],
 })
 export class DashboardModule {}

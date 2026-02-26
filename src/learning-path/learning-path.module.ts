@@ -9,7 +9,7 @@ import { QuizAttemptModule } from '../quiz-attempts/quiz-attempt.module';
 @Module({
   imports: [
     CourseModule,
-    LessonModule, 
+    LessonModule,
     LessonProgressModule,
     QuizAttemptModule,
   ],

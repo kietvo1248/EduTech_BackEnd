@@ -3,14 +3,15 @@ import {
   HydratedDocument,
   UpdateQuery,
   RootFilterQuery,
+  SortOrder,
 } from 'mongoose';
 
 /**
  * Base repository abstract class with common repository patterns for MongoDB/Mongoose
  *
- * @template TDomain - Domain model type (e.g., User)
- * @template TDocument - Mongoose document class type (e.g., UserDocument)
- * @template TDocumentType - Hydrated document type (e.g., UserDocumentType)
+ * @template TDomain - Domain model type (e.g., Course)
+ * @template TDocument - Mongoose document class type (e.g., CourseDocument)
+ * @template TDocumentType - Hydrated document type (e.g., CourseDocumentType)
  */
 export abstract class BaseRepository<
   TDomain,
@@ -55,6 +56,47 @@ export abstract class BaseRepository<
   }
 
   /**
+   * Find entities by filter with optional sorting
+   * @param filter - MongoDB filter object
+   * @param sort - MongoDB sort object
+   * @returns Array of domain entities
+   */
+  async findByFilter(
+    filter: Record<string, unknown>,
+    sort?: Record<string, SortOrder | { $meta: 'textScore' }>,
+  ): Promise<TDomain[]> {
+    let query = this.model.find(filter as RootFilterQuery<TDocumentType>);
+    if (sort) {
+      query = query.sort(sort);
+    }
+    const docs = await query.exec();
+    return this.mapper.toDomainArray(docs);
+  }
+
+  /**
+   * Find entities by filter with pagination
+   * @param filter - MongoDB filter object
+   * @param sort - MongoDB sort object
+   * @param skip - Number of items to skip
+   * @param limit - Number of items to return
+   * @returns Array of domain entities
+   */
+  async findByFilterWithPagination(
+    filter: Record<string, unknown>,
+    sort: Record<string, SortOrder | { $meta: 'textScore' }>,
+    skip: number,
+    limit: number,
+  ): Promise<TDomain[]> {
+    const docs = await this.model
+      .find(filter as RootFilterQuery<TDocumentType>)
+      .sort(sort)
+      .skip(skip)
+      .limit(limit)
+      .exec();
+    return this.mapper.toDomainArray(docs);
+  }
+
+  /**
    * Create new entity
    * @param entity - Partial domain entity to create
    * @returns Created domain entity
@@ -86,7 +128,7 @@ export abstract class BaseRepository<
   }
 
   /**
-   * Delete entity by ID
+   * Delete entity by ID (hard delete)
    * @param id - Entity ID
    */
   async delete(id: string): Promise<void> {
@@ -114,5 +156,37 @@ export abstract class BaseRepository<
       .countDocuments({ _id: id } as RootFilterQuery<TDocumentType>)
       .exec();
     return count > 0;
+  }
+
+  /**
+   * Soft delete entity by ID (sets isDeleted flag)
+   * @param id - Entity ID
+   * @param deletedAt - Deletion timestamp (default: now)
+   */
+  async softDelete(id: string, deletedAt: Date = new Date()): Promise<void> {
+    await this.model
+      .findByIdAndUpdate(id, {
+        isDeleted: true,
+        deletedAt,
+      } as UpdateQuery<TDocumentType>)
+      .exec();
+  }
+
+  /**
+   * Restore soft-deleted entity
+   * @param id - Entity ID
+   */
+  async restore(id: string): Promise<TDomain | null> {
+    const doc = await this.model
+      .findByIdAndUpdate(
+        id,
+        {
+          isDeleted: false,
+          deletedAt: null,
+        } as UpdateQuery<TDocumentType>,
+        { new: true },
+      )
+      .exec();
+    return doc ? this.mapper.toDomain(doc) : null;
   }
 }

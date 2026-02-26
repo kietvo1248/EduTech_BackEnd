@@ -11,14 +11,19 @@ import {
   Res,
   HttpStatus,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { Response } from 'express';
 import { CourseService } from './course.service';
-import { 
-  CreateCourseDto, 
-  UpdateCourseDto, 
-  QueryCourseDto, 
-  UpdateCourseStatusDto 
+import {
+  CreateCourseDto,
+  UpdateCourseDto,
+  QueryCourseDto,
+  UpdateCourseStatusDto,
 } from './dto';
 import { CourseStatus } from '../enums';
 import { BaseController } from '../core/base/base.controller';
@@ -36,13 +41,10 @@ export class CourseController extends BaseController {
   @Get()
   @ApiOperation({ summary: 'Get all courses with filtering and sorting' })
   @ApiResponse({ status: 200, description: 'Courses retrieved successfully' })
-  async getAllCourses(
-    @Query() query: QueryCourseDto,
-    @Res() res: Response,
-  ) {
+  async getAllCourses(@Query() query: QueryCourseDto, @Res() res: Response) {
     try {
       const result = await this.courseService.getAllCoursesWithFilter(query);
-      
+
       if (query.page && query.limit) {
         return this.sendPaginated(
           res,
@@ -52,12 +54,17 @@ export class CourseController extends BaseController {
           query.limit,
         );
       }
-      
-      return this.sendSuccess(res, result.courses, 'Courses retrieved successfully');
+
+      return this.sendSuccess(
+        res,
+        result.courses,
+        'Courses retrieved successfully',
+      );
     } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unknown error';
       return this.sendError(
         res,
-        error.message,
+        message,
         'Failed to retrieve courses',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
@@ -66,15 +73,22 @@ export class CourseController extends BaseController {
 
   @Get('published')
   @ApiOperation({ summary: 'Get published courses' })
-  @ApiResponse({ status: 200, description: 'Published courses retrieved successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Published courses retrieved successfully',
+  })
   async getPublishedCourses(@Res() res: Response) {
     try {
       const courses = await this.courseService.findPublished();
-      return this.sendSuccess(res, courses, 'Published courses retrieved successfully');
+      return this.sendSuccess(
+        res,
+        courses,
+        'Published courses retrieved successfully',
+      );
     } catch (error) {
       return this.sendError(
         res,
-        error.message,
+        error instanceof Error ? error.message : 'Unknown error',
         'Failed to retrieve published courses',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
@@ -85,15 +99,21 @@ export class CourseController extends BaseController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get courses created by current user' })
-  @ApiResponse({ status: 200, description: 'User courses retrieved successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'User courses retrieved successfully',
+  })
   async getMyCourses(
     @CurrentUser() user: User,
     @Query() query: QueryCourseDto,
     @Res() res: Response,
   ) {
     try {
-      const result = await this.courseService.findByAuthorIdWithFilter(user.id, query);
-      
+      const result = await this.courseService.findByAuthorIdWithFilter(
+        user.id,
+        query,
+      );
+
       if (query.page && query.limit) {
         return this.sendPaginated(
           res,
@@ -103,12 +123,16 @@ export class CourseController extends BaseController {
           query.limit,
         );
       }
-      
-      return this.sendSuccess(res, result.courses, 'User courses retrieved successfully');
+
+      return this.sendSuccess(
+        res,
+        result.courses,
+        'User courses retrieved successfully',
+      );
     } catch (error) {
       return this.sendError(
         res,
-        error.message,
+        error instanceof Error ? error.message : 'Unknown error',
         'Failed to retrieve user courses',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
@@ -117,15 +141,21 @@ export class CourseController extends BaseController {
 
   @Get('subject/:subjectId')
   @ApiOperation({ summary: 'Get courses by subject ID' })
-  @ApiResponse({ status: 200, description: 'Subject courses retrieved successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Subject courses retrieved successfully',
+  })
   async getCoursesBySubject(
     @Param('subjectId') subjectId: string,
     @Query() query: QueryCourseDto,
     @Res() res: Response,
   ) {
     try {
-      const result = await this.courseService.findBySubjectIdWithFilter(subjectId, query);
-      
+      const result = await this.courseService.findBySubjectIdWithFilter(
+        subjectId,
+        query,
+      );
+
       if (query.page && query.limit) {
         return this.sendPaginated(
           res,
@@ -135,12 +165,16 @@ export class CourseController extends BaseController {
           query.limit,
         );
       }
-      
-      return this.sendSuccess(res, result.courses, 'Subject courses retrieved successfully');
+
+      return this.sendSuccess(
+        res,
+        result.courses,
+        'Subject courses retrieved successfully',
+      );
     } catch (error) {
       return this.sendError(
         res,
-        error.message,
+        error instanceof Error ? error.message : 'Unknown error',
         'Failed to retrieve subject courses',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
@@ -154,13 +188,18 @@ export class CourseController extends BaseController {
     try {
       const course = await this.courseService.getCourseById(id);
       if (!course) {
-        return this.sendError(res, {}, 'Course not found', HttpStatus.NOT_FOUND);
+        return this.sendError(
+          res,
+          {},
+          'Course not found',
+          HttpStatus.NOT_FOUND,
+        );
       }
       return this.sendSuccess(res, course, 'Course retrieved successfully');
     } catch (error) {
       return this.sendError(
         res,
-        error.message,
+        error instanceof Error ? error.message : 'Unknown error',
         'Failed to retrieve course',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
@@ -185,13 +224,18 @@ export class CourseController extends BaseController {
         status: CourseStatus.Draft,
         isDeleted: false,
       };
-      
+
       const course = await this.courseService.createCourse(courseData);
-      return this.sendSuccess(res, course, 'Course created successfully', HttpStatus.CREATED);
+      return this.sendSuccess(
+        res,
+        course,
+        'Course created successfully',
+        HttpStatus.CREATED,
+      );
     } catch (error) {
       return this.sendError(
         res,
-        error.message,
+        error instanceof Error ? error.message : 'Unknown error',
         'Failed to create course',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
@@ -213,9 +257,14 @@ export class CourseController extends BaseController {
       // Check if user owns the course or has admin rights
       const course = await this.courseService.getCourseById(id);
       if (!course) {
-        return this.sendError(res, {}, 'Course not found', HttpStatus.NOT_FOUND);
+        return this.sendError(
+          res,
+          {},
+          'Course not found',
+          HttpStatus.NOT_FOUND,
+        );
       }
-      
+
       if (course.authorId !== user.id) {
         return this.sendError(
           res,
@@ -224,13 +273,20 @@ export class CourseController extends BaseController {
           HttpStatus.FORBIDDEN,
         );
       }
-      
-      const updatedCourse = await this.courseService.updateCourse(id, updateCourseDto);
-      return this.sendSuccess(res, updatedCourse, 'Course updated successfully');
+
+      const updatedCourse = await this.courseService.updateCourse(
+        id,
+        updateCourseDto,
+      );
+      return this.sendSuccess(
+        res,
+        updatedCourse,
+        'Course updated successfully',
+      );
     } catch (error) {
       return this.sendError(
         res,
-        error.message,
+        error instanceof Error ? error.message : 'Unknown error',
         'Failed to update course',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
@@ -241,7 +297,10 @@ export class CourseController extends BaseController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update course status' })
-  @ApiResponse({ status: 200, description: 'Course status updated successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Course status updated successfully',
+  })
   async updateCourseStatus(
     @Param('id') id: string,
     @Body() updateStatusDto: UpdateCourseStatusDto,
@@ -252,9 +311,14 @@ export class CourseController extends BaseController {
       // Check if user owns the course or has admin rights
       const course = await this.courseService.getCourseById(id);
       if (!course) {
-        return this.sendError(res, {}, 'Course not found', HttpStatus.NOT_FOUND);
+        return this.sendError(
+          res,
+          {},
+          'Course not found',
+          HttpStatus.NOT_FOUND,
+        );
       }
-      
+
       if (course.authorId !== user.id) {
         return this.sendError(
           res,
@@ -263,13 +327,20 @@ export class CourseController extends BaseController {
           HttpStatus.FORBIDDEN,
         );
       }
-      
-      const updatedCourse = await this.courseService.updateCourseStatus(id, updateStatusDto.status);
-      return this.sendSuccess(res, updatedCourse, 'Course status updated successfully');
+
+      const updatedCourse = await this.courseService.updateCourseStatus(
+        id,
+        updateStatusDto.status,
+      );
+      return this.sendSuccess(
+        res,
+        updatedCourse,
+        'Course status updated successfully',
+      );
     } catch (error) {
       return this.sendError(
         res,
-        error.message,
+        error instanceof Error ? error.message : 'Unknown error',
         'Failed to update course status',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
@@ -290,9 +361,14 @@ export class CourseController extends BaseController {
       // Check if user owns the course or has admin rights
       const course = await this.courseService.getCourseById(id);
       if (!course) {
-        return this.sendError(res, {}, 'Course not found', HttpStatus.NOT_FOUND);
+        return this.sendError(
+          res,
+          {},
+          'Course not found',
+          HttpStatus.NOT_FOUND,
+        );
       }
-      
+
       if (course.authorId !== user.id) {
         return this.sendError(
           res,
@@ -301,13 +377,13 @@ export class CourseController extends BaseController {
           HttpStatus.FORBIDDEN,
         );
       }
-      
+
       await this.courseService.softDeleteCourse(id);
       return this.sendSuccess(res, null, 'Course deleted successfully');
     } catch (error) {
       return this.sendError(
         res,
-        error.message,
+        error instanceof Error ? error.message : 'Unknown error',
         'Failed to delete course',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
@@ -328,9 +404,14 @@ export class CourseController extends BaseController {
       // Check if user owns the course or has admin rights
       const course = await this.courseService.getCourseByIdWithDeleted(id);
       if (!course) {
-        return this.sendError(res, {}, 'Course not found', HttpStatus.NOT_FOUND);
+        return this.sendError(
+          res,
+          {},
+          'Course not found',
+          HttpStatus.NOT_FOUND,
+        );
       }
-      
+
       if (course.authorId !== user.id) {
         return this.sendError(
           res,
@@ -339,13 +420,17 @@ export class CourseController extends BaseController {
           HttpStatus.FORBIDDEN,
         );
       }
-      
+
       const restoredCourse = await this.courseService.restoreCourse(id);
-      return this.sendSuccess(res, restoredCourse, 'Course restored successfully');
+      return this.sendSuccess(
+        res,
+        restoredCourse,
+        'Course restored successfully',
+      );
     } catch (error) {
       return this.sendError(
         res,
-        error.message,
+        error instanceof Error ? error.message : 'Unknown error',
         'Failed to restore course',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );

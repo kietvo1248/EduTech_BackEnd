@@ -24,7 +24,10 @@ export class QuizAttemptService {
     userId: string,
     quizId: string,
   ): Promise<QuizAttempt | null> {
-    return this.quizAttemptRepository.findBestAttemptByUserAndQuiz(userId, quizId);
+    return this.quizAttemptRepository.findBestAttemptByUserAndQuiz(
+      userId,
+      quizId,
+    );
   }
 
   async getAttemptById(id: string): Promise<QuizAttempt | null> {

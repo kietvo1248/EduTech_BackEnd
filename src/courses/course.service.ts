@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CourseRepositoryAbstract } from './infrastructure/persistence/document/repositories/course.repository.abstract';
 import { Course } from './domain/course';
 import { GradeLevel, CourseStatus } from '../enums';
-import { QueryCourseDto } from './dto';
+import { QueryCourseDto, SortOrder } from './dto';
 import { BaseService } from '../core/base/base.service';
 
 @Injectable()
@@ -42,7 +42,7 @@ export class CourseService extends BaseService {
   }> {
     const filterDto = query.filter || {};
     const sortDto = query.sort || {};
-    
+
     // Extract filter fields
     const search = filterDto.search;
     const gradeLevel = filterDto.gradeLevel;
@@ -56,41 +56,41 @@ export class CourseService extends BaseService {
     const limit = query.limit;
 
     // Build filter object for MongoDB query
-    const filter: any = { isDeleted: false };
+    const filter: Record<string, unknown> = { isDeleted: false };
 
     if (search) {
-      filter.$or = [
+      filter['$or'] = [
         { title: { $regex: search, $options: 'i' } },
         { description: { $regex: search, $options: 'i' } },
       ];
     }
 
     if (gradeLevel) {
-      filter.gradeLevel = gradeLevel;
+      filter['gradeLevel'] = gradeLevel;
     }
 
     if (status) {
-      filter.status = status;
+      filter['status'] = status;
     }
 
     if (type) {
-      filter.type = type;
+      filter['type'] = type;
     }
 
     if (authorId) {
-      filter.authorId = authorId;
+      filter['authorId'] = authorId;
     }
 
     if (subjectId) {
-      filter.subjectId = subjectId;
+      filter['subjectId'] = subjectId;
     }
 
     // Build sort object
-    const sort: any = {};
+    const sort: Record<string, number> = {};
     if (sortBy) {
-      sort[sortBy] = sortOrder === 'desc' ? -1 : 1;
+      sort[sortBy] = sortOrder === SortOrder.DESC ? -1 : 1;
     } else {
-      sort.createdAt = -1; // Default sort by creation date descending
+      sort['createdAt'] = -1; // Default sort by creation date descending
     }
 
     // Get total count
@@ -134,7 +134,7 @@ export class CourseService extends BaseService {
     data: Partial<Course>,
   ): Promise<Course | null> {
     // Remove fields that shouldn't be updated directly
-    const { status, isDeleted, deletedAt, ...updateData } = data;
+    const { ...updateData } = data;
     return this.courseRepository.update(id, updateData);
   }
 

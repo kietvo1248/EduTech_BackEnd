@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { Course } from '../../../../domain/course';
 import { CourseDocumentType } from '../schemas/course.schema';
+import { BaseMapper } from '../../../../../core/base/base.mapper';
 
 @Injectable()
-export class CourseMapper {
+export class CourseMapper extends BaseMapper<Course, CourseDocumentType> {
   toDomain(doc: CourseDocumentType): Course {
     return {
       id: doc._id.toString(),
@@ -21,9 +22,5 @@ export class CourseMapper {
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
     };
-  }
-
-  toDomainArray(docs: CourseDocumentType[]): Course[] {
-    return docs.map((doc) => this.toDomain(doc));
   }
 }

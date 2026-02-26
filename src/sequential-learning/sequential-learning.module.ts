@@ -6,11 +6,7 @@ import { QuizAttemptModule } from '../quiz-attempts/quiz-attempt.module';
 import { LessonModule } from '../lessons/lesson.module';
 
 @Module({
-  imports: [
-    LessonProgressModule,
-    QuizAttemptModule,
-    LessonModule,
-  ],
+  imports: [LessonProgressModule, QuizAttemptModule, LessonModule],
   controllers: [SequentialLearningController],
   providers: [SequentialLearningService],
   exports: [SequentialLearningService],

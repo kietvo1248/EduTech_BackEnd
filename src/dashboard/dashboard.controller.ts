@@ -1,5 +1,10 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { User } from '../users/domain/user';
@@ -17,8 +22,13 @@ export class DashboardController {
   ) {}
 
   @Get()
-  @ApiOperation({ summary: 'Get user dashboard with learning progress overview' })
-  @ApiResponse({ status: 200, description: 'Dashboard data retrieved successfully' })
+  @ApiOperation({
+    summary: 'Get user dashboard with learning progress overview',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Dashboard data retrieved successfully',
+  })
   async getDashboard(@CurrentUser() user: User) {
     // Get user's grade level from student profile
     const gradeLevel = user.studentProfile?.gradeLevel;
@@ -36,13 +46,19 @@ export class DashboardController {
     }
 
     // Get learning path
-    const learningPath = await this.learningPathService.getLearningPath(user.id, gradeLevel);
+    const learningPath = await this.learningPathService.getLearningPath(
+      user.id,
+      gradeLevel,
+    );
 
     // Calculate progress summary
     const userProgress = await this.lessonProgressService.findByUserId(user.id);
-    const completedLessons = userProgress.filter(p => p.isCompleted).length;
+    const completedLessons = userProgress.filter((p) => p.isCompleted).length;
     const totalLessons = userProgress.length;
-    const progressPercent = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
+    const progressPercent =
+      totalLessons > 0
+        ? Math.round((completedLessons / totalLessons) * 100)
+        : 0;
 
     // Calculate total XP (assume 100 XP per completed lesson)
     const totalXP = completedLessons * 100;
@@ -66,14 +82,19 @@ export class DashboardController {
 
   @Get('stats')
   @ApiOperation({ summary: 'Get detailed learning statistics' })
-  @ApiResponse({ status: 200, description: 'Learning statistics retrieved successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Learning statistics retrieved successfully',
+  })
   async getLearningStats(@CurrentUser() user: User) {
     const userProgress = await this.lessonProgressService.findByUserId(user.id);
-    
+
     // Group progress by completion status
-    const completed = userProgress.filter(p => p.isCompleted);
-    const inProgress = userProgress.filter(p => p.progressPercent > 0 && !p.isCompleted);
-    const notStarted = userProgress.filter(p => p.progressPercent === 0);
+    const completed = userProgress.filter((p) => p.isCompleted);
+    const inProgress = userProgress.filter(
+      (p) => p.progressPercent > 0 && !p.isCompleted,
+    );
+    const notStarted = userProgress.filter((p) => p.progressPercent === 0);
 
     // Calculate weekly progress (mock data for now)
     const weeklyProgress = [
@@ -92,9 +113,21 @@ export class DashboardController {
       },
       weeklyProgress,
       achievements: [
-        { name: 'First Lesson', description: 'Complete your first lesson', earned: completed.length > 0 },
-        { name: 'Week Warrior', description: 'Complete 7 lessons in a week', earned: false },
-        { name: 'Quiz Master', description: 'Score 100% on 5 quizzes', earned: false },
+        {
+          name: 'First Lesson',
+          description: 'Complete your first lesson',
+          earned: completed.length > 0,
+        },
+        {
+          name: 'Week Warrior',
+          description: 'Complete 7 lessons in a week',
+          earned: false,
+        },
+        {
+          name: 'Quiz Master',
+          description: 'Score 100% on 5 quizzes',
+          earned: false,
+        },
       ],
     };
   }

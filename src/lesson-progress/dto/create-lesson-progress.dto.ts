@@ -1,5 +1,14 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsString, IsNotEmpty, IsBoolean, IsInt, Min, Max, IsOptional, IsDate } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsBoolean,
+  IsInt,
+  Min,
+  Max,
+  IsOptional,
+  IsDate,
+} from 'class-validator';
 
 export class CreateLessonProgressDto {
   @ApiProperty({

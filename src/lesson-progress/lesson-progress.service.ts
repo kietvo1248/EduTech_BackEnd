@@ -54,7 +54,7 @@ export class LessonProgressService {
     data: Partial<LessonProgress>,
   ): Promise<LessonProgress | null> {
     const existing = await this.findByUserAndLesson(userId, lessonId);
-    
+
     if (existing) {
       return this.lessonProgressRepository.update(existing.id, data);
     } else {
@@ -82,10 +82,17 @@ export class LessonProgressService {
   ): Promise<LessonProgress | null> {
     if (typeof dataOrLessonId === 'string' && data) {
       // New signature: updateProgress(userId, lessonId, data)
-      return this.updateProgressByUserAndLesson(idOrUserId, dataOrLessonId, data);
+      return this.updateProgressByUserAndLesson(
+        idOrUserId,
+        dataOrLessonId,
+        data,
+      );
     } else {
       // Old signature: updateProgress(id, data)
-      return this.lessonProgressRepository.update(idOrUserId, dataOrLessonId as Partial<LessonProgress>);
+      return this.lessonProgressRepository.update(
+        idOrUserId,
+        dataOrLessonId as Partial<LessonProgress>,
+      );
     }
   }
 

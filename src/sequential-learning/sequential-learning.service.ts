@@ -39,29 +39,42 @@ export class SequentialLearningService {
     private readonly lessonService: LessonService,
   ) {}
 
-  async trackVideoProgress(userId: string, trackingData: VideoTrackingDto): Promise<void> {
+  async trackVideoProgress(
+    userId: string,
+    trackingData: VideoTrackingDto,
+  ): Promise<void> {
     const { lessonId, currentTime, duration, completed } = trackingData;
-    
+
     // Cập nhật progress của lesson
     const progressPercent = Math.round((currentTime / duration) * 100);
-    
-    await this.lessonProgressService.updateProgressByUserAndLesson(userId, lessonId, {
-      progressPercent: Math.max(progressPercent, 0),
-      videoWatched: completed,
-      lastWatchedAt: new Date(),
-      videoCurrentTime: currentTime,
-      videoDuration: duration,
-    });
+
+    await this.lessonProgressService.updateProgressByUserAndLesson(
+      userId,
+      lessonId,
+      {
+        progressPercent: Math.max(progressPercent, 0),
+        videoWatched: completed,
+        lastWatchedAt: new Date(),
+        videoCurrentTime: currentTime,
+        videoDuration: duration,
+      },
+    );
   }
 
   async canAccessQuiz(userId: string, lessonId: string): Promise<boolean> {
-    const progress = await this.lessonProgressService.findByUserAndLesson(userId, lessonId);
+    const progress = await this.lessonProgressService.findByUserAndLesson(
+      userId,
+      lessonId,
+    );
     return progress?.videoWatched || false;
   }
 
-  async submitQuiz(userId: string, quizData: QuizSubmissionDto): Promise<QuizResult> {
+  async submitQuiz(
+    userId: string,
+    quizData: QuizSubmissionDto,
+  ): Promise<QuizResult> {
     const { lessonId, answers } = quizData;
-    
+
     // Kiểm tra xem đã xem video chưa
     const canAccess = await this.canAccessQuiz(userId, lessonId);
     if (!canAccess) {
@@ -75,11 +88,13 @@ export class SequentialLearningService {
     }
 
     // Chấm điểm quiz
-    const result = await this.gradeQuiz(lesson.quizId, answers);
-    
+    const result = this.gradeQuiz(lesson.quizId, answers);
+
     // Lưu kết quả
     for (const answer of answers) {
-      const detail = result.details.find(d => d.questionId === answer.questionId);
+      const detail = result.details.find(
+        (d) => d.questionId === answer.questionId,
+      );
       await this.quizAttemptService.create({
         userId,
         questionId: answer.questionId,
@@ -90,10 +105,12 @@ export class SequentialLearningService {
         score: result.score,
         totalQuestions: result.totalQuestions,
         correctAnswers: result.correctAnswers,
-        answers: answers.map(a => ({
+        answers: answers.map((a) => ({
           questionId: a.questionId,
           selectedAnswer: a.selectedAnswer,
-          isCorrect: result.details.find(d => d.questionId === a.questionId)?.correct || false,
+          isCorrect:
+            result.details.find((d) => d.questionId === a.questionId)
+              ?.correct || false,
         })),
         timeSpentMs: 0,
         completedAt: new Date(),
@@ -102,17 +119,24 @@ export class SequentialLearningService {
 
     // Cập nhật lesson progress nếu đạt điểm
     if (result.passed) {
-      await this.lessonProgressService.updateProgressByUserAndLesson(userId, lessonId, {
-        quizCompleted: true,
-        quizScore: result.score,
-        progressPercent: 100, // Hoàn thành 100% khi pass quiz
-      });
+      await this.lessonProgressService.updateProgressByUserAndLesson(
+        userId,
+        lessonId,
+        {
+          quizCompleted: true,
+          quizScore: result.score,
+          progressPercent: 100, // Hoàn thành 100% khi pass quiz
+        },
+      );
     }
 
     return result;
   }
 
-  private async gradeQuiz(quizId: string, answers: Array<{ questionId: string; selectedAnswer: string }>): Promise<QuizResult> {
+  private gradeQuiz(
+    quizId: string,
+    answers: Array<{ questionId: string; selectedAnswer: string }>,
+  ): QuizResult {
     // TODO: Implement actual quiz grading logic
     // Tạm thời mock data để test
     const totalQuestions = answers.length;
@@ -128,7 +152,7 @@ export class SequentialLearningService {
       // Mock logic: giả sử đáp án đúng là 'A' cho tất cả câu
       const correct = answer.selectedAnswer === 'A';
       if (correct) correctAnswers++;
-      
+
       details.push({
         questionId: answer.questionId,
         correct,
@@ -149,15 +173,21 @@ export class SequentialLearningService {
     };
   }
 
-  async getLessonStatus(userId: string, lessonId: string): Promise<{
+  async getLessonStatus(
+    userId: string,
+    lessonId: string,
+  ): Promise<{
     videoWatched: boolean;
     quizCompleted: boolean;
     quizScore?: number;
     canAccessQuiz: boolean;
     isCompleted: boolean;
   }> {
-    const progress = await this.lessonProgressService.findByUserAndLesson(userId, lessonId);
-    
+    const progress = await this.lessonProgressService.findByUserAndLesson(
+      userId,
+      lessonId,
+    );
+
     return {
       videoWatched: progress?.videoWatched || false,
       quizCompleted: progress?.quizCompleted || false,

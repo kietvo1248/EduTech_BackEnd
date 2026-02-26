@@ -1,6 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNotEmpty, IsBoolean, IsEnum, IsOptional } from 'class-validator';
-import { GradeLevel, CourseStatus, CourseType } from '../../enums';
+import {
+  IsString,
+  IsNotEmpty,
+  IsBoolean,
+  IsEnum,
+  IsOptional,
+} from 'class-validator';
+import { GradeLevel, CourseType } from '../../enums';
 
 export class CreateCourseDto {
   @ApiProperty({

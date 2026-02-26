@@ -1,13 +1,18 @@
 import { Controller, Post, Get, Body, Param, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { User } from '../users/domain/user';
-import { 
-  SequentialLearningService, 
-  VideoTrackingDto, 
-  QuizSubmissionDto, 
-  QuizResult 
+import {
+  SequentialLearningService,
+  VideoTrackingDto,
+  QuizSubmissionDto,
+  QuizResult,
 } from './sequential-learning.service';
 
 @ApiTags('sequential-learning')
@@ -15,16 +20,24 @@ import {
 @UseGuards(JwtAuthGuard)
 @Controller('sequential-learning')
 export class SequentialLearningController {
-  constructor(private readonly sequentialLearningService: SequentialLearningService) {}
+  constructor(
+    private readonly sequentialLearningService: SequentialLearningService,
+  ) {}
 
   @Post('track-video')
   @ApiOperation({ summary: 'Track video watching progress' })
-  @ApiResponse({ status: 200, description: 'Video progress tracked successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Video progress tracked successfully',
+  })
   async trackVideoProgress(
     @CurrentUser() user: User,
     @Body() trackingData: VideoTrackingDto,
   ): Promise<{ success: boolean }> {
-    await this.sequentialLearningService.trackVideoProgress(user.id, trackingData);
+    await this.sequentialLearningService.trackVideoProgress(
+      user.id,
+      trackingData,
+    );
     return { success: true };
   }
 
@@ -35,13 +48,19 @@ export class SequentialLearningController {
     @CurrentUser() user: User,
     @Param('lessonId') lessonId: string,
   ): Promise<{ canAccess: boolean }> {
-    const canAccess = await this.sequentialLearningService.canAccessQuiz(user.id, lessonId);
+    const canAccess = await this.sequentialLearningService.canAccessQuiz(
+      user.id,
+      lessonId,
+    );
     return { canAccess };
   }
 
   @Post('submit-quiz')
   @ApiOperation({ summary: 'Submit quiz answers and get immediate results' })
-  @ApiResponse({ status: 200, description: 'Quiz submitted and graded successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Quiz submitted and graded successfully',
+  })
   async submitQuiz(
     @CurrentUser() user: User,
     @Body() quizData: QuizSubmissionDto,
@@ -51,7 +70,10 @@ export class SequentialLearningController {
 
   @Get('lesson-status/:lessonId')
   @ApiOperation({ summary: 'Get comprehensive lesson progress status' })
-  @ApiResponse({ status: 200, description: 'Lesson status retrieved successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Lesson status retrieved successfully',
+  })
   async getLessonStatus(
     @CurrentUser() user: User,
     @Param('lessonId') lessonId: string,

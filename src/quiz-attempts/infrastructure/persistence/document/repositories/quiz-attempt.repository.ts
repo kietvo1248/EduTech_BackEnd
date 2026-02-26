@@ -30,7 +30,24 @@ export class QuizAttemptRepository implements QuizAttemptRepositoryAbstract {
   async create(
     data: Omit<QuizAttempt, 'id' | 'createdAt'>,
   ): Promise<QuizAttempt> {
-    const createData: any = {
+    const createData: {
+      userId: Types.ObjectId;
+      questionId: Types.ObjectId;
+      isCorrect: boolean;
+      userAnswer?: string | number | boolean | string[];
+      score: number;
+      totalQuestions: number;
+      correctAnswers: number;
+      answers?: Array<{
+        questionId: string;
+        selectedAnswer: string | number | boolean | string[];
+        isCorrect: boolean;
+      }>;
+      timeSpentMs?: number;
+      quizId?: Types.ObjectId;
+      lessonId?: Types.ObjectId;
+      completedAt?: Date;
+    } = {
       userId: new Types.ObjectId(data.userId),
       questionId: new Types.ObjectId(data.questionId),
       isCorrect: data.isCorrect,

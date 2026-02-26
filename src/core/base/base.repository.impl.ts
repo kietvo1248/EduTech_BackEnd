@@ -16,23 +16,14 @@ export class BaseRepositoryImpl<
   TDocument,
   TDocumentType extends HydratedDocument<TDocument>,
 > extends BaseRepository<TDomain, TDocument, TDocumentType> {
-  protected model: Model<TDocumentType>;
-  protected mapper: {
-    toDomain(document: TDocumentType): TDomain;
-    toDomainArray(documents: TDocumentType[]): TDomain[];
-    toDocument?(domain: Partial<TDomain>): Partial<TDocument>;
-  };
-
   constructor(
-    model: Model<TDocumentType>,
-    mapper: {
+    protected model: Model<TDocumentType>,
+    protected mapper: {
       toDomain(document: TDocumentType): TDomain;
       toDomainArray(documents: TDocumentType[]): TDomain[];
       toDocument?(domain: Partial<TDomain>): Partial<TDocument>;
     },
   ) {
     super();
-    this.model = model;
-    this.mapper = mapper;
   }
 }
