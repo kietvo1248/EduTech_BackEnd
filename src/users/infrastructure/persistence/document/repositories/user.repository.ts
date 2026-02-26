@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { User } from '../../../domain/user';
-import { UserRepositoryAbstract } from './repositories/user.repository.abstract';
-import { UserDocument, UserDocumentType } from './schemas/user.schema';
-import { UserMapper } from './mappers/user.mapper';
-import { UserRole, EmailVerificationStatus } from '../../../../enums';
-import { FilterUserDto, SortUserDto } from '../../../dto/query-user.dto';
+import { User } from '../../../../domain/user';
+import { UserRepositoryAbstract } from './user.repository.abstract';
+import { UserDocument, UserDocumentType } from '../schemas/user.schema';
+import { UserMapper } from '../mappers/user.mapper';
+import { UserRole, EmailVerificationStatus } from '../../../../../enums';
+import { FilterUserDto, SortUserDto } from '../../../../dto/query-user.dto';
 
 /** Sentinel filter applied to every query — never return soft-deleted records unless explicitly requested. */
 const NOT_DELETED = { isDeleted: { $ne: true } };

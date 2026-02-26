@@ -1,5 +1,6 @@
 export * from './base.controller';
 export * from './base.service';
+export * from './base.crud.service';
 export * from './base.repository';
 export * from './base.repository.impl';
 export * from './base.mapper';
