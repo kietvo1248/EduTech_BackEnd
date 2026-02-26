@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, UpdateQuery } from 'mongoose';
+import { Model } from 'mongoose';
 import {
   SubjectDocument,
   SubjectDocumentType,
@@ -8,29 +8,31 @@ import {
 import { SubjectRepositoryAbstract } from './subject.repository.abstract';
 import { SubjectMapper } from '../mappers/subject.mapper';
 import { Subject } from '../../../../domain/subject';
+import { BaseRepositoryImpl } from '../../../../../core/base/base.repository.impl';
 
 @Injectable()
-export class SubjectRepository implements SubjectRepositoryAbstract {
+export class SubjectRepository
+  extends BaseRepositoryImpl<Subject, SubjectDocument, SubjectDocumentType>
+  implements SubjectRepositoryAbstract
+{
   constructor(
     @InjectModel(SubjectDocument.name)
-    private readonly subjectModel: Model<SubjectDocumentType>,
-    private readonly mapper: SubjectMapper,
-  ) {}
-
-  async findById(id: string): Promise<Subject | null> {
-    const doc = await this.subjectModel.findById(id);
-    return doc ? this.mapper.toDomain(doc) : null;
+    protected readonly model: Model<SubjectDocumentType>,
+    protected readonly mapper: SubjectMapper,
+  ) {
+    super(model, mapper);
   }
 
-  async findAll(): Promise<Subject[]> {
-    const docs = await this.subjectModel.find();
+  async findAllSubjects(): Promise<Subject[]> {
+    const docs = await this.model.find();
     return this.mapper.toDomainArray(docs);
   }
 
+  // Override create to ensure data structure
   async create(
     data: Omit<Subject, 'id' | 'createdAt' | 'updatedAt'>,
   ): Promise<Subject> {
-    const doc = await this.subjectModel.create({
+    const doc = await this.model.create({
       name: data.name,
       slug: data.slug,
       iconUrl: data.iconUrl,
@@ -38,28 +40,8 @@ export class SubjectRepository implements SubjectRepositoryAbstract {
     return this.mapper.toDomain(doc);
   }
 
-  async update(id: string, data: Partial<Subject>): Promise<Subject | null> {
-    const updateData: Record<string, unknown> = {};
-    if (data.name) updateData.name = data.name;
-    if (data.slug) updateData.slug = data.slug;
-    if (data.iconUrl) updateData.iconUrl = data.iconUrl;
-
-    const doc = await this.subjectModel.findByIdAndUpdate(
-      id,
-      updateData as UpdateQuery<SubjectDocumentType>,
-      {
-        new: true,
-      },
-    );
-    return doc ? this.mapper.toDomain(doc) : null;
-  }
-
-  async delete(id: string): Promise<void> {
-    await this.subjectModel.findByIdAndDelete(id);
-  }
-
   async findBySlug(slug: string): Promise<Subject | null> {
-    const doc = await this.subjectModel.findOne({ slug });
+    const doc = await this.model.findOne({ slug });
     return doc ? this.mapper.toDomain(doc) : null;
   }
 }

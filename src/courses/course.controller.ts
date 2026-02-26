@@ -25,13 +25,14 @@ import {
   QueryCourseDto,
   UpdateCourseStatusDto,
 } from './dto';
-import { CourseStatus } from '../enums';
+import { CourseStatus, UserRole } from '../enums';
 import { BaseController } from '../core/base/base.controller';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { CurrentUser, Roles } from '../auth/decorators';
 import { User } from '../users/domain/user';
 
-@ApiTags('courses')
+@ApiTags('Courses')
 @Controller('courses')
 export class CourseController extends BaseController {
   constructor(private readonly courseService: CourseService) {
@@ -207,10 +208,12 @@ export class CourseController extends BaseController {
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.Admin, UserRole.Teacher)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Create a new course' })
+  @ApiOperation({ summary: 'Create a new course (Admin/Teacher only)' })
   @ApiResponse({ status: 201, description: 'Course created successfully' })
+  @ApiResponse({ status: 403, description: 'Forbidden - Insufficient permissions' })
   async createCourse(
     @Body() createCourseDto: CreateCourseDto,
     @CurrentUser() user: User,
@@ -243,10 +246,12 @@ export class CourseController extends BaseController {
   }
 
   @Put(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.Admin, UserRole.Teacher)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Update course' })
+  @ApiOperation({ summary: 'Update course (Admin/Teacher only)' })
   @ApiResponse({ status: 200, description: 'Course updated successfully' })
+  @ApiResponse({ status: 403, description: 'Forbidden - Insufficient permissions' })
   async updateCourse(
     @Param('id') id: string,
     @Body() updateCourseDto: UpdateCourseDto,
@@ -294,13 +299,15 @@ export class CourseController extends BaseController {
   }
 
   @Put(':id/status')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.Admin, UserRole.Teacher)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Update course status' })
+  @ApiOperation({ summary: 'Update course status (Admin/Teacher only)' })
   @ApiResponse({
     status: 200,
     description: 'Course status updated successfully',
   })
+  @ApiResponse({ status: 403, description: 'Forbidden - Insufficient permissions' })
   async updateCourseStatus(
     @Param('id') id: string,
     @Body() updateStatusDto: UpdateCourseStatusDto,
@@ -348,10 +355,12 @@ export class CourseController extends BaseController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.Admin, UserRole.Teacher)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Soft delete course' })
+  @ApiOperation({ summary: 'Soft delete course (Admin/Teacher only)' })
   @ApiResponse({ status: 200, description: 'Course deleted successfully' })
+  @ApiResponse({ status: 403, description: 'Forbidden - Insufficient permissions' })
   async deleteCourse(
     @Param('id') id: string,
     @CurrentUser() user: User,
@@ -391,10 +400,12 @@ export class CourseController extends BaseController {
   }
 
   @Put(':id/restore')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.Admin, UserRole.Teacher)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Restore soft deleted course' })
+  @ApiOperation({ summary: 'Restore soft deleted course (Admin/Teacher only)' })
   @ApiResponse({ status: 200, description: 'Course restored successfully' })
+  @ApiResponse({ status: 403, description: 'Forbidden - Insufficient permissions' })
   async restoreCourse(
     @Param('id') id: string,
     @CurrentUser() user: User,
