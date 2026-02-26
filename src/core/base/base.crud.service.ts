@@ -36,10 +36,7 @@ export abstract class BaseCrudService<
     return this.repository.findById(id);
   }
 
-  async findAll(
-    limit?: number,
-    offset?: number,
-  ): Promise<[TDomain[], number]> {
+  async findAll(limit?: number, offset?: number): Promise<[TDomain[], number]> {
     return this.repository.findAll(limit, offset);
   }
 
@@ -56,7 +53,12 @@ export abstract class BaseCrudService<
     skip: number,
     limit: number,
   ): Promise<TDomain[]> {
-    return this.repository.findByFilterWithPagination(filter, sort, skip, limit);
+    return this.repository.findByFilterWithPagination(
+      filter,
+      sort,
+      skip,
+      limit,
+    );
   }
 
   // UPDATE
