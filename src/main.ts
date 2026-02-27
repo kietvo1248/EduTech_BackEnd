@@ -52,6 +52,10 @@ async function bootstrap() {
     .setDescription('REST API documentation')
     .setVersion('1.0.0')
     .addServer(`http://localhost:${port}`, 'Local Development')
+    .addServer(
+      'https://edutech-backend-y2zc.onrender.com/',
+      'Production Server',
+    )
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, apiConfig);
